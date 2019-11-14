@@ -81,17 +81,24 @@ u64   temp_addr = saddr_ipv4(data,nh_off, data_end);
         index = parse_ipv4(data, nh_off, data_end);
 // Trying to scrap multiple IP addresses here.
 // Later it'd be great if IP addresses could be saved in an array
+/*
 	if (ip_addr0 == 0)
 		ip_addr0 = temp_addr;
 	else if (ip_addr0 != ip_addr1)
 		ip_addr1 = temp_addr;
+*/
+	ip_addr1 = temp_addr;
     }
+
     else if (h_proto == htons(ETH_P_IPV6))
        index = parse_ipv6(data, nh_off, data_end);
     else
         index = 0;
 
+
+    ip_addr0 = 1111111;
     hash_addr.update(&in0, &ip_addr0);
+    hash_addr.update(&in1, &ip_addr1);
     value = dropcnt.lookup(&index);
 
     if (value)

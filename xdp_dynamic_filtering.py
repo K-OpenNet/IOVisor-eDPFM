@@ -133,13 +133,17 @@ while 1:
     for k in dropcnt.keys():
         val = dropcnt[k].value if maptype == "array" else dropcnt.sum(k).value
         i = k.value
-        ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
+#        ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][2])))
 #        print('\n')
+        ip_addr = hash_addr.values()[1]
+        ip_addr2 = hash_addr.values()[0] 
+# eBPF map values can be accessed by using values()
+# eBPF map values are saved in a sequential order using [0],[1],...
         if val:
                 #
             delta = val - prev[i]
             prev[i] = val
-            contents = str(ip_addr) + ' ' + str(delta)
+            contents = str(ip_addr) + ' ' + str(delta) + ' ' + str(ip_addr2)
             print(contents)
             print('\n')
             ack = producer.send(topicName, contents)
