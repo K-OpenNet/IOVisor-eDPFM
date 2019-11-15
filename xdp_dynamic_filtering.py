@@ -125,6 +125,12 @@ dropcnt = b.get_table("dropcnt")
 
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")
+
+packet_counter = 0
+temp_address = '192.168.1.10'
+packet_counter2 = 0
+temp_address2 = '192.168.1.2'
+
 #ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
 while 1:
     #under while
@@ -135,19 +141,34 @@ while 1:
         i = k.value
 #        ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][2])))
 #        print('\n')
-        ip_addr = hash_addr.values()[1]
-        ip_addr2 = hash_addr.values()[0] 
+        ip_addr = str(convert_ip_to_bin(hash_addr.values()[0]))
 # eBPF map values can be accessed by using values()
 # eBPF map values are saved in a sequential order using [0],[1],...
         if val:
                 #
             delta = val - prev[i]
             prev[i] = val
-            contents = str(ip_addr) + ' ' + str(delta) + ' ' + str(ip_addr2)
+            contents = str(ip_addr) + ' ' + str(delta)
             print(contents)
+
+
+# PACKET COUNTER TEST - BEGIN
+
+            if ip_addr == temp_address:
+                packet_counter = packet_counter + 1
+            elif ip_addr == temp_address2:
+                packet_counter2 = packet_counter2 + 1
+
+# PACKET COUNTER TEST - END
+            print('\n')
+            print('packet counter : ')
+            print(packet_counter)
+            print('  packet counter2 : ')
+            print(packet_counter2)
+
             print('\n')
             ack = producer.send(topicName, contents)
-            time.sleep(5)
+            time.sleep(0.5)
 #        time.sleep(1)
 #    except KeyboardInterrupt:
 #        print("Removing filter from device")
