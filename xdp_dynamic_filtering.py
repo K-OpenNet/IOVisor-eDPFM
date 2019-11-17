@@ -121,7 +121,7 @@ else:
           parent="ffff:fff2", classid=1, direct_action=True)
 
 hash_addr = b.get_table("hash_addr")
-dropcnt = b.get_table("dropcnt")
+pktcnt = b.get_table("pktcnt")
 
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")
@@ -132,16 +132,13 @@ packet_counter2 = 0
 temp_address2 = '192.168.1.2'
 
 #ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
+# test drive considers two incoming packet sources
 while 1:
-    #under while
-#    try:
-        # here
-    for k in dropcnt.keys():
-        val = dropcnt[k].value if maptype == "array" else dropcnt.sum(k).value
+    for k in pktcnt.keys():
+        val = pktcnt[k].value if maptype == "array" else pktcnt.sum(k).value
         i = k.value
-#        ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][2])))
-#        print('\n')
         ip_addr = str(convert_ip_to_bin(hash_addr.values()[0]))
+        
 # eBPF map values can be accessed by using values()
 # eBPF map values are saved in a sequential order using [0],[1],...
         if val:
@@ -165,6 +162,9 @@ while 1:
 #            elif ip_addr == temp_address2:
 #                packet_counter2 = packet_counter2 + 1
 
+
+# USER SPACE PROGRAM ALONE CAN NOT PARSE ALL INCOMING PACKETS WHEN THERE AREE MULTIPLE SOURCES
+# KERNEL SPACE PROGRAM HAS TO INTEREVENE
             if ip_addr == temp_address:
                 packet_counter = packet_counter + delta
             elif ip_addr == temp_address2:
@@ -181,7 +181,6 @@ while 1:
 
             print('\n')
             ack = producer.send(topicName, contents)
-            time.sleep(0.5)
 #        time.sleep(1)
 #    except KeyboardInterrupt:
 #        print("Removing filter from device")

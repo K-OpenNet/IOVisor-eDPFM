@@ -7,7 +7,7 @@
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 
-BPF_TABLE(MAPTYPE, uint32_t, long, dropcnt, 256);
+BPF_TABLE(MAPTYPE, uint32_t, long, pktcnt, 256);
 BPF_ARRAY(hash_addr, u64,12);
 
 static inline int parse_ipv4(void *data, u64 nh_off, void *data_end) {
@@ -88,12 +88,15 @@ u64   temp_addr = saddr_ipv4(data,nh_off, data_end);
 	hash_addr.update(&in0, &temp_addr);	
     }
 
+// When a packet comes in, check the map first and see if the address is in the amp
+// if the address is within the map, increment the counter? 
+
     else if (h_proto == htons(ETH_P_IPV6))
        index = parse_ipv6(data, nh_off, data_end);
     else
-        index = 0;
+       index = 0;
 
-    value = dropcnt.lookup(&index);
+    value = pktcnt.lookup(&index);
 
     if (value)
         __sync_fetch_and_add(value, 1);
