@@ -155,13 +155,22 @@ while 1:
 # DO NOT INCREMENT THE COUNTER JUST BY SEEING THE IP ADDRESS
 # INCREMENT THE COUNTER AFTER CHECKING THE NUMBER OF PACKETS THAT ARE BEING PARSED
 
+    
 
 # PACKET COUNTER TEST - BEGIN
+# ORIGINAL - BEIGN HERE  : THE CODES BELOW SERVES AS A BACK-UP
+#
+#            if ip_addr == temp_address:
+#                packet_counter = packet_counter + 1
+#            elif ip_addr == temp_address2:
+#                packet_counter2 = packet_counter2 + 1
 
             if ip_addr == temp_address:
-                packet_counter = packet_counter + 1
+                packet_counter = packet_counter + delta
             elif ip_addr == temp_address2:
-                packet_counter2 = packet_counter2 + 1
+                packet_counter2 = packet_counter2 + delta
+
+
 
 # PACKET COUNTER TEST - END
             print('\n')
