@@ -181,6 +181,10 @@ while 1:
 
             print('\n')
             ack = producer.send(topicName, contents)
+            
+            hash_addr.clear()
+            pktcnt.clear()
+
 #        time.sleep(1)
 #    except KeyboardInterrupt:
 #        print("Removing filter from device")
