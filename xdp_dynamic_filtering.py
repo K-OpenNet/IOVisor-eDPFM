@@ -182,6 +182,8 @@ while 1:
             print('\n')
             ack = producer.send(topicName, contents)
             
+# clear all values from maps after receiving packet info
+
             hash_addr.clear()
             pktcnt.clear()
 

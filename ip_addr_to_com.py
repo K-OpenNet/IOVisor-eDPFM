@@ -4,7 +4,7 @@ import time
 import sys
 from ctypes import *
 
-primal = '192.168.1.1'
+primal = '192.168.1.2'
 
 marker = primal.find('.')
 one = int(primal[0:primal.find('.')])

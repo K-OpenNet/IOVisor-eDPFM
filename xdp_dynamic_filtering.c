@@ -53,7 +53,7 @@ int xdp_prog1(struct CTXTYPE *ctx) {
     u64 ip_addr0 = 0;
     u64 ip_addr1 = 0;
     u64 addr_cnt = 0; // address counter to count how many addresses have been accounted for
-
+    u64 temp = 0;
     nh_off = sizeof(*eth);
 
     if (data + nh_off  > data_end)
@@ -79,24 +79,22 @@ u64   temp_addr = saddr_ipv4(data,nh_off, data_end);
 
     if (h_proto == htons(ETH_P_IP))
     {
+	if ( hash_addr.lookup(&in0) == 
         index = parse_ipv4(data, nh_off, data_end);
-// Trying to scrap multiple IP addresses here.
-// Later it'd be great if IP addresses could be saved in an array
-//
-// Let's save the IP address here and increment the count so I can account for the packets that are being saved
-	
-	hash_addr.update(&in0, &temp_addr);	
+	// this is where I can save the IP addrsses : WORK HERE .. look up the map and decide which counter to increment
+	hash_addr.update(&in0, &temp_addr);
     }
-
-// When a packet comes in, check the map first and see if the address is in the amp
-// if the address is within the map, increment the counter? 
-
     else if (h_proto == htons(ETH_P_IPV6))
        index = parse_ipv6(data, nh_off, data_end);
     else
        index = 0;
 
-    value = pktcnt.lookup(&index);
+    // Now the addresses have been added to BPF maps
+    // Now I will try to leverage maps and try to distinguish packets according to them
+
+
+
+    value = pktcnt.lookup(&index);	// use lookup to get the value
 
     if (value)
         __sync_fetch_and_add(value, 1);
