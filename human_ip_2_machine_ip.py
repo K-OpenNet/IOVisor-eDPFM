@@ -1,4 +1,4 @@
-hum_address = '203.237.53.60'
+hum_address = '192.168.1.2'
 length = len(hum_address)
 dot = []    # save dot positions fo the human readable IP address
 frag = []   # save fragmented numbers of humanm readable IP addresses, each separated by a dot
