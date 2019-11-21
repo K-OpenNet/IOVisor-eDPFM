@@ -7,8 +7,14 @@
 #include <linux/ip.h>
 #include <linux/ipv6.h>
 
+struct packet_info {
+	u64 source_address;
+	u64 packet_counter;
+}; 
+
 BPF_TABLE(MAPTYPE, uint32_t, long, pktcnt, 256);
-BPF_ARRAY(hash_addr, u64,12);
+
+BPF_HASH(ingress, u64, struct packet_info, 4096); 
 
 static inline int parse_ipv4(void *data, u64 nh_off, void *data_end) {
     struct iphdr *iph = data + nh_off;
@@ -25,7 +31,6 @@ static inline int saddr_ipv4(void *data, u64 nh_off, void *data_end) {
 	return 0;
     return iph -> saddr;
 }
-
 
 static inline int parse_ipv6(void *data, u64 nh_off, void *data_end) {
     struct ipv6hdr *ip6h = data + nh_off;
@@ -76,16 +81,12 @@ int xdp_prog1(struct CTXTYPE *ctx) {
     }
 
     u64   temp_addr = saddr_ipv4(data,nh_off, data_end);
-    hash_addr.update(&in0, &temp);
+    struct packet_info *packet_info = ingress.lookup(&temp_addr);
 
+// 33663168 : 192.168.1.2
     if (h_proto == htons(ETH_P_IP))
     {
-	if (hash_addr.lookup(&in0) ) // 33663168 : machine IP of 192.168.1.2 
-	{
-        	index = parse_ipv4(data, nh_off, data_end);
-	// this is where I can save the IP addrsses : WORK HERE .. look up the map and decide which counter to increment
-		hash_addr.update(&in0, &temp_addr); // Maybe this doesn't work cause there is no &in0 key in the eBPF map the first time
-	}
+        index = parse_ipv4(data, nh_off, data_end);
     }
     else if (h_proto == htons(ETH_P_IPV6))
        index = parse_ipv6(data, nh_off, data_end);
@@ -94,8 +95,6 @@ int xdp_prog1(struct CTXTYPE *ctx) {
 
     // Now the addresses have been added to BPF maps
     // Now I will try to leverage maps and try to distinguish packets according to them
-
-
 
     value = pktcnt.lookup(&index);	// use lookup to get the value
 
