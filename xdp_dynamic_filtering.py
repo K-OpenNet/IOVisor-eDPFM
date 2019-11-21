@@ -147,7 +147,7 @@ while 1:
 #            contents = str(ip_addr) + ' ' + str(delta)
             contents = str(delta)
             print(contents)
-
+            test = ingress.items()
 
 #            if ip_addr == temp_address:
 #                packet_counter = packet_counter + 1
