@@ -6,11 +6,6 @@ import time
 import sys
 from ctypes import *
 
-#bootstrap_servers = ['lcaolhost:9092','localhost:9091','localhost:9090']
-#topicName = 'xdp_kafka_topic'
-
-#producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
-#producer = KafkaProducer()
 
 def convert_ip_to_bin(data):    # converts machine friendly IP -> human friendly IP
         #input is a machine friendly IP
@@ -120,9 +115,8 @@ else:
     ip.tc("add-filter", "bpf", idx, ":1", fd=fn.fd, name=fn.name,
           parent="ffff:fff2", classid=1, direct_action=True)
 
-#hash_addr = b.get_table("hash_addr")
+hash_addr = b.get_table("hash_addr")
 pktcnt = b.get_table("pktcnt")
-ingress = b.get_table("ingress")
 
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")
@@ -138,28 +132,51 @@ while 1:
     for k in pktcnt.keys():
         val = pktcnt[k].value if maptype == "array" else pktcnt.sum(k).value
         i = k.value
-#        ip_addr = str(convert_ip_to_bin(hash_addr.values()[0]))
+        ip_addr = str(convert_ip_to_bin(hash_addr.values()[0]))
+        packet_counter2  = hash_addr.values()[1]
         
-        if val:
+        test = str(hash_addr.values()[0])
+        
+# eBPF map values can be accessed by using values()
+# eBPF map values are saved in a sequential order using [0],[1],...
+        if (hash_addr.values()[0]):
                 #
             delta = val - prev[i]
             prev[i] = val
-#            contents = str(ip_addr) + ' ' + str(delta)
-            contents = str(delta)
+            contents = str(ip_addr) + ' ' + str(delta)
             print(contents)
-            test = ingress.items()
 
+# THE VALUE SAVED IN THE EBPF MAP STAYS UNTIL IT'S REPLACED BY ANOTHER VALUE
+# DO NOT INCREMENT THE COUNTER JUST BY SEEING THE IP ADDRESS
+# INCREMENT THE COUNTER AFTER CHECKING THE NUMBER OF PACKETS THAT ARE BEING PARSED
+
+    
+
+# PACKET COUNTER TEST - BEGIN
+# ORIGINAL - BEIGN HERE  : THE CODES BELOW SERVES AS A BACK-UP
+#
 #            if ip_addr == temp_address:
 #                packet_counter = packet_counter + 1
 #            elif ip_addr == temp_address2:
 #                packet_counter2 = packet_counter2 + 1
 
+
+# USER SPACE PROGRAM ALONE CAN NOT PARSE ALL INCOMING PACKETS WHEN THERE AREE MULTIPLE SOURCES
+# KERNEL SPACE PROGRAM HAS TO INTEREVENE
+            if ip_addr == temp_address:
+                packet_counter = packet_counter + delta
+
+# PACKET COUNTER TEST - END
             print('\n')
-#            ack = producer.send(topicName, contents)
+            print('test : ')
+            print(test)
+            print('  packet counter2 : ')
+            print(packet_counter2)
+            print('\n')
             
 # clear all values from maps after receiving packet info
 
-#            hash_addr.clear()
+            hash_addr.clear()
             pktcnt.clear()
 
 #        time.sleep(1)
