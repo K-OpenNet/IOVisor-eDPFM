@@ -1,0 +1,50 @@
+# url : 127.0.0.1
+
+import time
+from kafka import KafkaConsumer
+import sys
+
+bootstrap_servers = ['localhost:9091','localhost:9092','localhost:9090']
+topicName = 'xdp_packet'
+
+consumer = KafkaConsumer (topicName, group_id = 'group1', bootstrap_servers = bootstrap_servers, auto_offset_reset = 'latest')
+
+ip_src_addr = 0
+ip_dst_addr = 0
+ip_tos = 0
+ip_id = 0
+ip_frag_off = 0
+ip_ttl = 0
+ip_protocol = 0
+ip_check = 0
+ip_total_length = 1
+packet_info = []
+
+def disect_input():
+    # cut transmitted data in the right order
+    # order in which the datas are saved[ip] : src_addr / dst_addr / tos / id / frag_off / ttl / protocol / check / total length
+    # each value disected by '|'
+    global packet_info
+    test_input = '192.168.1.2|192.168.1.1|0|5072|64|64|1|16871|21504'
+    front_flag = 0
+    rear_flag = 0
+    counter = 0
+    for i in test_input:
+        if i == '|' : 
+            packet_info.append(str(test_input[front_flag:counter]))
+            front_flag = counter+1
+        counter = counter + 1
+    packet_info.append(test_input[front_flag:]  # save the very last section of the header info
+
+    print(packet_info)    
+'''
+def kafka_consumer():
+    print('>>> kafka receiving...')
+    for message in consumer:
+        incoming = str(message.value)
+        print(incoming)
+
+kafka_consumer()
+'''
+
+disect_input()

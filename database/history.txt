@@ -1,0 +1,5 @@
+db_saver.py : 
+- saving db here
+
+backup_db_saver.py :
+- data being saved in mongodb verified.
