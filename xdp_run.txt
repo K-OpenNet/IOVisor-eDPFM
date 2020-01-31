@@ -1,7 +1,0 @@
-clang -O2 -emit-llvm -c xdp_test.c -o -| llc -march=bpf -filetype=obj -o xdp.o
-
-sudo ip link set dev ens2np0 xdp obj xdp.o
-
-sudo ip link set ens2np0 xdp off
-
-
