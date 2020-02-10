@@ -93,3 +93,6 @@ backup_4_perf_packet_monitor.py :
 kafka_packet_monitor_tx.py :
 - transmits parsed packet information via kafka
 - tx side
+
+backup_kafka_packet_monitor_rx.py :
+- recieves incoming packets and prints it out on kafka
