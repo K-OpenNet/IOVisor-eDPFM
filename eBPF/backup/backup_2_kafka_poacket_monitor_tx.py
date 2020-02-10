@@ -1,6 +1,8 @@
 from bcc import BPF
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
+import os
+import subprocess
 
 # Connect kafka producer here
 
@@ -87,10 +89,7 @@ import struct
 
 # define a function to output perf output
 
-tester_send = ''
-
 def print_skb_event(cpu, data, size):
-    global tester_send
     class SkbEvent(ct.Structure):
 #        _fields_ = [ ("magic", ct.c_uint32),("magic2", ct.c_uint32)]
         _fields_ = [("magic", ct.c_uint32)]
@@ -106,9 +105,10 @@ def print_skb_event(cpu, data, size):
     tester_kafka = str(skb_event.magic)
 #    print(tester_kafka[:4])
     #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
-#    print(tester_kafka)
-    tester_send = tester_send + ' ' + tester_kafka
-#    producer.send(topicName, tester_kafka)
+    print(tester_kafka)
+    print('\n' + '-' + str(counter))
+    
+    producer.send(topicName, tester_kafka)
     # trying to implement kafka producer - end
     
 bpf = BPF(text=bpf_text)
@@ -128,12 +128,11 @@ black_list = bpf.get_table("black_list")    # retrieve blacklist list
 
 print("=========================packet monitor=============================\n")
 
+
+
 try:
     while True :
         bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
-        print("this is tester send")
-        print(tester_send)
-        tester_send = ''
 except KeyboardInterrupt:
     sys.stdout.close()
     pass

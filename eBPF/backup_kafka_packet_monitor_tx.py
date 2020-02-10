@@ -63,7 +63,7 @@ int packet_monitor(struct __sk_buff *skb) {
 
     magic = ip -> src;
     magic2 = ip -> dst;
-    
+
     skb_events.perf_submit_skb(skb, skb->len, &magic, sizeof(magic)); // this one parses number as a hex to the user space
     skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
     
@@ -87,10 +87,7 @@ import struct
 
 # define a function to output perf output
 
-tester_send = ''
-
 def print_skb_event(cpu, data, size):
-    global tester_send
     class SkbEvent(ct.Structure):
 #        _fields_ = [ ("magic", ct.c_uint32),("magic2", ct.c_uint32)]
         _fields_ = [("magic", ct.c_uint32)]
@@ -99,16 +96,15 @@ def print_skb_event(cpu, data, size):
     
     # add functionalities here that will send data to another program
     
-#    print("- : ")
-#    print("%d" % (skb_event.magic))
+    print("- : ")
+    print("%d" % (skb_event.magic))
 
     # trying to implement kafka producer - begin
+
     tester_kafka = str(skb_event.magic)
-#    print(tester_kafka[:4])
     #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
-#    print(tester_kafka)
-    tester_send = tester_send + ' ' + tester_kafka
-#    producer.send(topicName, tester_kafka)
+    producer.send(topicName, tester_kafka)
+
     # trying to implement kafka producer - end
     
 bpf = BPF(text=bpf_text)
@@ -131,9 +127,6 @@ print("=========================packet monitor=============================\n")
 try:
     while True :
         bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
-        print("this is tester send")
-        print(tester_send)
-        tester_send = ''
 except KeyboardInterrupt:
     sys.stdout.close()
     pass
