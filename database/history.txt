@@ -3,3 +3,7 @@ db_saver.py :
 
 backup_db_saver.py :
 - data being saved in mongodb verified.
+
+kafka_packet_monitor_save_db.py:
+- initial backup before implementing database
+
