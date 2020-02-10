@@ -93,6 +93,14 @@ backup_4_perf_packet_monitor.py :
 kafka_packet_monitor_tx.py :
 - transmits parsed packet information via kafka
 - tx side
+- parsed information is passed in blocks (therefore, it's hard to tell which is src ip / which is dst ip
+
+backup_2_kafka_packet_monitor_tx.py :
+- transmits pasrsed packet information via kafka
+- packets are sent in a single string
+- now can distinguish between src ip / dst ip
 
 backup_kafka_packet_monitor_rx.py :
 - recieves incoming packets and prints it out on kafka
+
+
