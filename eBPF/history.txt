@@ -101,6 +101,6 @@ backup_2_kafka_packet_monitor_tx.py :
 - now can distinguish between src ip / dst ip
 
 backup_kafka_packet_monitor_rx.py :
-- recieves incoming packets and prints it out on kafka
+- receives incoming packets, converts them into human ip address and saves them in variables 
 
 
