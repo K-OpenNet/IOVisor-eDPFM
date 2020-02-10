@@ -1,7 +1,14 @@
 from bcc import BPF
+from kafka import KafkaProducer
+from kafka.errors import KafkaError
+
+# Connect kafka producer here
+
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+topicName = 'packetmonitor'
 
 # Network interface to be monoitored
-INTERFACE = "br-netrome"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 
@@ -85,10 +92,20 @@ def print_skb_event(cpu, data, size):
     class SkbEvent(ct.Structure):
         _fields_ = [ ("magic", ct.c_uint32), ("magic2", ct.c_uint32)]
         
-    skb_event = ct.cast(data, ct.POINTER(SkbEvent)).contents 
+    skb_event = ct.cast(data, ct.POINTER(SkbEvent)).contents
+    
     # add functionalities here that will send data to another program
+    
     print("- : ")
     print("%d" % (skb_event.magic))
+
+    # trying to implement kafka producer - begin
+
+    tester_kafka = str(skb_event.magic)
+    #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
+    producer.send(topicName, tester_kafka)
+
+    # trying to implement kafka producer - end
     
 bpf = BPF(text=bpf_text)
 
@@ -111,6 +128,6 @@ try:
     while True :
         bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
 except KeyboardInterrupt:
-#    sys.stdout.close()
+    sys.stdout.close()
     pass
 

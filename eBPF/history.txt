@@ -89,3 +89,7 @@ backup_3_perf_packet_monitor.py :
 
 backup_4_perf_packet_monitor.py :
 - now data from the user space is written on a file
+
+kafka_packet_monitor_tx.py :
+- transmits parsed packet information via kafka
+- tx side

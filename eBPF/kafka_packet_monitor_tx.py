@@ -5,10 +5,10 @@ from kafka.errors import KafkaError
 # Connect kafka producer here
 
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-topicName = 'test'
+topicName = 'packetmonitor'
 
 # Network interface to be monoitored
-INTERFACE = "br-netrome"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 
@@ -101,8 +101,9 @@ def print_skb_event(cpu, data, size):
 
     # trying to implement kafka producer - begin
 
-    tester_kafka = skb_event.magic
-    producer.send('sample',key=b'message-two', value=b'tester_kafka')
+    tester_kafka = str(skb_event.magic)
+    #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
+    producer.send(topicName, tester_kafka)
 
     # trying to implement kafka producer - end
     
