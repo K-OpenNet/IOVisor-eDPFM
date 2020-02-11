@@ -10,10 +10,13 @@ Instructions
 - for eBPF based packet monitoring
 python IOVisor-eDPFM/eBPF/packet_monitor.py
 
-CAUTION
+DONE SO FAR
+* Packet source/destination IP parse
+* Parsed information transmitted to and saved from the database saver
+
+BIBIM-BAP
 * Packet's source IP address and destination IP address will be printed.
-* Printed IP addresses are in decimal version -> will be fixed soon
+* Packet monitor fails to parse some packets from 152 packets when [ping -f]ed -> Due to the eBPF Map ring buffer
 
-COMING SOON
-* Packet data passed via Kafka to Kafka consumer
-
+WORKING ON
+* Packet monitor performance upgrade
