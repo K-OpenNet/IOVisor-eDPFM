@@ -54,7 +54,7 @@ int packet_monitor(struct __sk_buff *skb) {
     }
     */
     
-    skb_events.perf_submit_skb(skb, skb -> len, &magic, sizeof(magic));
+//    skb_events.perf_submit_skb(skb, skb -> len, &magic, sizeof(magic));
 
     saddr = ip -> src;
     daddr = ip -> dst;
@@ -65,7 +65,7 @@ int packet_monitor(struct __sk_buff *skb) {
     magic2 = ip -> dst;
     
     skb_events.perf_submit_skb(skb, skb->len, &magic, sizeof(magic)); // this one parses number as a hex to the user space
-    skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
+//    skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
     
     // The last four attributes the user space receives are the values retrieved from the kernel space
     

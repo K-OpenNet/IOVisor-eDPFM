@@ -1,7 +1,7 @@
 from bcc import BPF
 
 # Network interface to be monoitored
-INTERFACE = "br-netrome"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 
