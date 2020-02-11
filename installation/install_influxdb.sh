@@ -13,6 +13,10 @@ sudo apt install influxdb -y
 sudo systemctl start influxdb
 sudo systemctl enable influxdb
 
-echo "execute [$netstat -plntu] and check influxdb running"
+echo "now installing influxdb python"
 
+pip install influxdb
+pip install --upgrade influxdb
+
+echo "execute [$netstat -plntu] and check influxdb running"
 
