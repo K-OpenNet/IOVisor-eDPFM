@@ -5,6 +5,8 @@ Instructions
 
 1. Clone the directory
 
+2. Do not run any scripts from the installation folder, the script files are just for testing purposes
+
 - for eBPF based packet monitoring
 python IOVisor-eDPFM/eBPF/packet_monitor.py
 
