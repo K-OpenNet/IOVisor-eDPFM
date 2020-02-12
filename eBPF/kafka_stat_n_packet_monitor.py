@@ -47,7 +47,7 @@ int packet_monitor(struct __sk_buff *skb) {
     u64 magic2 = 9;
     
     struct ethernet_t *ethernet = cursor_advance(cursor, sizeof(*ethernet));
-    if (!(ethernet -> type == 0x0800)) {
+    if (!(ethernet -> type == 0x0800)) {    
         return 0; // drop
     }
 
@@ -181,7 +181,8 @@ try:
         print(output_len)
         print('\n')
         for i in range(0,output_len):
-            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1])
+            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
+            # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
         print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
 #        producer.send(topicName, tester_send)
