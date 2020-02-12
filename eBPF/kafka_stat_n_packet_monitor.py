@@ -37,6 +37,7 @@ int packet_monitor(struct __sk_buff *skb) {
     u32 ttl;
     u32 hchecksum;
     u32 test_key = 3232235522;
+    u32 test_key2 = 3232235521;
     long* count = 0;
     long one = 1;
     
@@ -79,9 +80,17 @@ int packet_monitor(struct __sk_buff *skb) {
             *count += 1;
         else        // if the map for the key doesn't exist, create one
             {
-                packet_cnt.update(&test_key, &one);
+                packet_cnt.update(&magic, &one);
             }
     }
+
+    // THIS PART IS ONLY FOR TESTING - BEGIN ; DELETE when the test is over
+
+    packet_cnt.update(&test_key2, &one);
+
+    // THIS PART IS ONLY FOR TESTING - END
+
+
     skb_events.perf_submit_skb(skb, skb->len, &magic, sizeof(magic)); // this one parses number as a hex to the user space
     skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
     
@@ -166,9 +175,14 @@ try:
 
 #        print("this is tester send")
         time.sleep(OUTPUT_INTERVAL)
-        packet_cnt_test = packet_cnt.items()
-        print(packet_cnt_test)
-        print('hi')
+        packet_cnt_output = packet_cnt.items()
+        print(packet_cnt_output)
+        output_len = len(packet_cnt_output)
+        print(output_len)
+        print('\n')
+        for i in range(0,output_len):
+            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1])
+        print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
 #        producer.send(topicName, tester_send)
         
