@@ -105,6 +105,11 @@ backup_kafka_packet_monitor_rx.py :
 
 *********************************************************************************************************************
 
-backup_kafka_stat_n_packet_monitor.py :
+backup_stat_n_packet_monitor.py :
 - now can count how many packets have entered via NIC
 - still carry all the single packet parsing capabilities
+
+backup_2_stat_n_packet_monitor.py :
+- Outputs how many packets were sent to the interface
+- Need to manually input source IP address in order to get egress packets out of the count
+- Just prints out stat status. 

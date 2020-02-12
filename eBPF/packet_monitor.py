@@ -109,8 +109,7 @@ print("=========================packet monitor=============================\n")
 
 try:
     while True :
-        bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
+        bpf.perf_buffer_poll()  
 except KeyboardInterrupt:
 #    sys.stdout.close()
     pass
-
