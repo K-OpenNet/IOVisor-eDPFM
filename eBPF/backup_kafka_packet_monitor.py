@@ -4,12 +4,11 @@ from kafka.errors import KafkaError
 
 # Connect kafka producer here
 
-#producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-#topicName = 'packetmonitor'
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+topicName = 'packetmonitor'
 
 # Network interface to be monoitored
-# INTERFACE = "br-mellanox"
-INTERFACE = "eno2"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 
@@ -25,8 +24,6 @@ bpf_text = """
 
 BPF_PERF_OUTPUT(skb_events);    // has to be delcared outside any function
 BPF_ARRAY(black_list, u64, 5);
-BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in here
-// name / key / leaf / size
 
 int packet_monitor(struct __sk_buff *skb) {
     u8 *cursor = 0;
@@ -34,14 +31,11 @@ int packet_monitor(struct __sk_buff *skb) {
     u32 daddr;
     u32 ttl;
     u32 hchecksum;
-    u32 test_key = 3232235522;
-    long* count = 0;
-    long one = 1;
     
     // trial - begin
 
     u64 magic = 9999999;
-    u64 magic2 = 9;
+    u64 magic2 = 1912;
     
     struct ethernet_t *ethernet = cursor_advance(cursor, sizeof(*ethernet));
     if (!(ethernet -> type == 0x0800)) {
@@ -65,18 +59,11 @@ int packet_monitor(struct __sk_buff *skb) {
     saddr = ip -> src;
     daddr = ip -> dst;
     ttl = ip -> ttl;
+    hchecksum = ip -> hchecksum;
 
     magic = ip -> src;
     magic2 = ip -> dst;
-//    packet_cnt.update(&test_key, &magic2);
-
-    count = packet_cnt.lookup(&test_key);
-    if (count)  // check if this map exists
-        *count += 1;
-    else        // if the map for the key doesn't exist, create one
-        {
-            packet_cnt.update(&test_key, &one);
-        }
+    
     skb_events.perf_submit_skb(skb, skb->len, &magic, sizeof(magic)); // this one parses number as a hex to the user space
     skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
     
@@ -133,8 +120,6 @@ BPF.attach_raw_socket(function_skb_matching, INTERFACE)
 bpf["skb_events"].open_perf_buffer(print_skb_event)
 
 black_list = bpf.get_table("black_list")    # retrieve blacklist list
-    # retrieeve packet_cnt map
-packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
 
 #sys.stdout = open('myoutput.txt','w')
 
@@ -144,8 +129,8 @@ try:
     while True :
         bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
 #        print("this is tester send")
-        print(tester_send)
-#        producer.send(topicName, tester_send)
+#        print(tester_send)
+        producer.send(topicName, tester_send)
         tester_send = ''
         
 except KeyboardInterrupt:
