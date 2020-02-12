@@ -113,3 +113,7 @@ backup_2_stat_n_packet_monitor.py :
 - Outputs how many packets were sent to the interface
 - Need to manually input source IP address in order to get egress packets out of the count
 - Just prints out stat status. 
+
+backup_3_stat_n_packet_monitor.py :
+- Automatically exports the IP addresses and the number of packets sent
+- Now only need to implement these info. to be sent via Kafka
