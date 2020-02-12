@@ -8,8 +8,7 @@ from kafka.errors import KafkaError
 #topicName = 'packetmonitor'
 
 # Network interface to be monoitored
-# INTERFACE = "br-mellanox"
-INTERFACE = "eno2"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 

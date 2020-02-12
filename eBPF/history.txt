@@ -103,4 +103,8 @@ backup_2_kafka_packet_monitor_tx.py :
 backup_kafka_packet_monitor_rx.py :
 - receives incoming packets, converts them into human ip address and saves them in variables 
 
+*********************************************************************************************************************
 
+backup_kafka_stat_n_packet_monitor.py :
+- now can count how many packets have entered via NIC
+- still carry all the single packet parsing capabilities
