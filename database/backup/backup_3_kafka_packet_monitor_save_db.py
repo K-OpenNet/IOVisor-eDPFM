@@ -27,15 +27,6 @@ def kafka_consumer():
             value = message.value
             # value being saved appropriately has been confirmed
             # data is either parsed in 3 columns or 6 columns -> len : 30 && len : 60
-#            print(value)
-            print('\n\n len : ')
-            print(value)
-            length = len(value)
-            for i in range(0,length/22):
-                src_ip = decimal_to_human(str(value[i*22:(i+1)*22-11]))   # first ten digits parsed
-                dst_ip = decimal_to_human(str(value[(i+1)*22-11:(i+1)*22]))  # second ten digits parsed
-                insert_into_db(src_ip, dst_ip, '111')
-            '''
             if (len(value) == 30):
 #                print(value)
                 src_ip_0 = str(decimal_to_human(str(value[9:19])))
@@ -54,7 +45,6 @@ def kafka_consumer():
                 print(' src1 : ' + str(src_ip_0) + ' dst1 : ' + str(dst_ip_0) + ' src2 : '+ str(src_ip_1) + ' dst2 : ' + str(dst_ip_1))
                 insert_into_db(src_ip_0,dst_ip_0,time_temp)
                 insert_into_db(src_ip_1,dst_ip_1,time_temp)
-            '''
     except KeyboardInterrupt:
         sys.exit()
 
