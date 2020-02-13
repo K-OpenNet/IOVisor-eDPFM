@@ -182,7 +182,7 @@ try:
         print('\n')
         for i in range(0,output_len):
             print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
-            # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
+            # time.time() otuputs how much time has passed since 00:00 hrs, 1st of Jan, 1970
         print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
 #        producer.send(topicName, tester_send)

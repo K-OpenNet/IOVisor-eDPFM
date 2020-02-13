@@ -8,7 +8,7 @@ import time
 
 # Network interface to be monoitored
 
-INTERFACE = "eno2"
+INTERFACE = "br-mellanox"
 
 bpf_text = """
 
@@ -28,7 +28,7 @@ BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in 
 // name / key / leaf / size
 
 int packet_monitor(struct __sk_buff *skb) {
-    u64 SOURCE_IP = 3232235521;
+    u64 SOURCE_IP = 3232235521; 
     u8 *cursor = 0;
     u32 saddr;
     u32 daddr;
@@ -84,7 +84,7 @@ int packet_monitor(struct __sk_buff *skb) {
 
     // THIS PART IS ONLY FOR TESTING - BEGIN ; DELETE when the test is over
 
-    packet_cnt.update(&test_key2, &one);
+//    packet_cnt.update(&test_key2, &one);
 
     // THIS PART IS ONLY FOR TESTING - END
 
