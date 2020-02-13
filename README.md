@@ -3,9 +3,13 @@ IOVisor-eBPF Dynamic Packet Filtering and Monitoring for K-ONE project
 
 Instructions
 
-1. Clone the directory
+1. Upgrade the linux kernel to 5.4 (refer to http://ubuntuhandbook.org/index.php/2019/11/linux-kernel-5-4-released/)
 
-2. Do not run any scripts from the installation folder, the script files are just for testing purposes
+2. Install bcc (refer to https://github.com/iovisor/bcc/blob/master/INSTALL.md)
+
+3. Clone the directory
+
+4. Do not run any scripts from the installation folder, the script files are just for testing purposes
 
 - for eBPF based packet monitoring
 python IOVisor-eDPFM/eBPF/packet_monitor.py
