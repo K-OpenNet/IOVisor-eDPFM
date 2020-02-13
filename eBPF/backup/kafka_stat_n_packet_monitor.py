@@ -5,8 +5,8 @@ import time
 
 # Connect kafka producer here
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-topicName = 'packetmonitor'
+#producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+#topicName = 'packetmonitor'
 
 # Network interface to be monoitored
 
@@ -30,7 +30,7 @@ BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in 
 // name / key / leaf / size
 
 int packet_monitor(struct __sk_buff *skb) {
-    u64 SOURCE_IP = 3232235521; 
+    u64 SOURCE_IP = 3232235521;
     u8 *cursor = 0;
     u32 saddr;
     u32 daddr;
@@ -139,7 +139,7 @@ def print_skb_event(cpu, data, size):
     # trying to implement kafka producer - begin
     tester_kafka = str(skb_event.magic)
 #    print(tester_kafka[:4])
-#    producer.send(topicName, str('1')) # this one sends str 1 thru kafka
+    #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
 #    print(tester_kafka)
     tester_send = tester_send + ' ' + tester_kafka
 #    producer.send(topicName, tester_kafka)
@@ -181,13 +181,11 @@ try:
         print(output_len)
         print('\n')
         for i in range(0,output_len):
-
             print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
-            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] # kafka output : ########## #
-            producer.send(topicName, kafka_content)
-            # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
+            # time.time() otuputs how much time has passed since 00:00 hrs, 1st of Jan, 1970
         print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
+#        producer.send(topicName, tester_send)
         
 except KeyboardInterrupt:
     sys.stdout.close()
