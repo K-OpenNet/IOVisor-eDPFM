@@ -12,11 +12,11 @@ consumer = KafkaConsumer(topicName, bootstrap_servers = bootstrap_servers)
 
 # database test - BEGIN
 
-def insert_into_db(src_ip, dst_ip, time):
+def insert_into_db(src_ip, pkt_num, time):
     client = MongoClient()
     db = client.packetmonitor    # database name
     collection = db.bpf2    # document name
-    collection.insert_one({'src_ip':src_ip,'dst_ip':dst_ip,'time':time})
+    collection.insert_one({'src_ip':src_ip,'pkt_num':pkt_num,'time':time})
 
 # database test - END
 
@@ -28,13 +28,25 @@ def kafka_consumer():
             # value being saved appropriately has been confirmed
             # data is either parsed in 3 columns or 6 columns -> len : 30 && len : 60
 #            print(value)
-            print('\n\n len : ')
-            print(value)
+#            print('\n\n len : ')
+#            print(value)
             length = len(value)
-            for i in range(0,length/22):
-                src_ip = decimal_to_human(str(value[i*22:(i+1)*22-11]))   # first ten digits parsed
-                dst_ip = decimal_to_human(str(value[(i+1)*22-11:(i+1)*22]))  # second ten digits parsed
-                insert_into_db(src_ip, dst_ip, '111')
+#                src_ip = decimal_to_human(str(value[i*22:(i+1)*22-11]))   # first ten digits parsed
+#                dst_ip = decimal_to_human(str(value[(i+1)*22-11:(i+1)*22]))  # second ten digits parsed
+#                insert_into_db(src_ip, dst_ip, '111')
+            counter = 0
+            for i in value[::-1]: # to find time in the string, reverse the string for iterated lookup
+                if i == ' ':
+                    break
+                else:
+                    counter = counter + 1
+
+#            print('source ip ' + str(value[:10]) + 'num : ' + str(value[11:-counter])) + 'time : ' + str(value[-counter:])
+            source_ip = decimal_to_human(str(value[:10]))
+            pkt_num = str(value[11:-counter])
+            time = str(value[-counter:])
+            print('source ip : ' + source_ip + 'packet : ' + pkt_num) + 'time : ' + str(value[-counter:])
+            insert_into_db(source_ip, pkt_num, time)
             '''
             if (len(value) == 30):
 #                print(value)
