@@ -86,7 +86,7 @@ int packet_monitor(struct __sk_buff *skb) {
 
     // THIS PART IS ONLY FOR TESTING - BEGIN ; DELETE when the test is over
 
-    packet_cnt.update(&test_key2, &one);
+//    packet_cnt.update(&test_key2, &one);
 
     // THIS PART IS ONLY FOR TESTING - END
 
@@ -183,7 +183,7 @@ try:
         for i in range(0,output_len):
 
             print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
-            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] # kafka output : ########## #
+            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.time())# kafka output : ########## #
             producer.send(topicName, kafka_content)
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
         print('done')
