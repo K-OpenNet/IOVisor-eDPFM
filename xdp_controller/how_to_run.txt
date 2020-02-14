@@ -1,0 +1,2 @@
+1. run hash_map_xdp_drop.py first
+2. Then run xdp_controller.py
