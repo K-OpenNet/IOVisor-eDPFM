@@ -176,17 +176,15 @@ try:
 #        print("this is tester send")
         time.sleep(OUTPUT_INTERVAL)
         packet_cnt_output = packet_cnt.items()
-        print(packet_cnt_output)
+#        print(packet_cnt_output)
         output_len = len(packet_cnt_output)
-        print(output_len)
+#        print(output_len)
         print('\n')
         for i in range(0,output_len):
-
-            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
-            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.time())# kafka output : ########## #
+            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1])+';'+str(time.localtime()[2])+';'+str(time.localtime()[3])+';'+str(time.localtime()[4])+';'+str(time.localtime()[5]))
+            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1])+';'+str(time.localtime()[2])+';'+str(time.localtime()[3])+';'+str(time.localtime()[4])+';'+str(time.localtime()[5])
             producer.send(topicName, kafka_content)
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
-        print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
         
 except KeyboardInterrupt:
