@@ -1,6 +1,13 @@
 import os
 import subprocess
+import pymongo import MongoClient
+import time
 
+# connecting to pymongo db
+
+client = MongoClient('localhost',27017)
+db = client['packetmonitor']
+collection = db['bpf2']
 
 # to write a system command, refer to the line below:
 #subprocess.call(["apt-get","update"])
