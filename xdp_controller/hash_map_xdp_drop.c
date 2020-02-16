@@ -8,7 +8,7 @@
 #include <linux/ipv6.h>
 
 //BPF_HASH(hash_test, u64, u64, 10240 );	// -size default : 10240 but for test, I use 2
-BPF_HASH(black_list,u64, u64, 10240);
+BPF_HASH(black_list,u32, u8, 10240);
 
 // 192.168.1.2 = 33663168
 // 192.168.1.14 = 234989760
