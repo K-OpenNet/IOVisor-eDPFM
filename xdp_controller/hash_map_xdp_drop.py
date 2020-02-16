@@ -84,7 +84,7 @@ else:
     ip.tc("add-filter", "bpf", idx, ":1", fd=fn.fd, name=fn.name,
           parent="ffff:fff2", classid=1, direct_action=True)
 
-hash_addr = b.get_table("hash_addr")
+hash_addr = b.get_table("black_list")
 
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")

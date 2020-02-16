@@ -8,7 +8,7 @@
 #include <linux/ipv6.h>
 
 //BPF_HASH(hash_test, u64, u64, 10240 );	// -size default : 10240 but for test, I use 2
-BPF_HASH(hash_test,u64, u64, 10240);
+BPF_HASH(black_list,u64, u64, 10240);
 
 // 192.168.1.2 = 33663168
 // 192.168.1.14 = 234989760
@@ -54,7 +54,7 @@ int xdp_prog1(struct CTXTYPE *ctx) {
     	ip_addr = saddr_ipv4(data, nh_off, data_end);
     }
     
-    check_ip = hash_test.lookup(&ip_addr); // right now, compares the value of the key. Should change it to comparing the keys
+    check_ip = black_list.lookup(&ip_addr); // right now, compares the value of the key. Should change it to comparing the keys
 
     if (check_ip != NULL) // after looking up a value in the map, it must be tested if the return value isnt' NULL
     {

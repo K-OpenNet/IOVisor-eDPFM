@@ -36,6 +36,7 @@ def update_bpf_map(update_value):
     subprocess.call(["bpftool","map","update","id",str(black_list_map_id),"key","00","00","00","00","value","11","11","11","00","00","00","00","00"])
 #    print("bpf map with id " + str(black_list_map_id) + "updated...")
 #    subprocess.call(["bpftool","map","lookup","id",str(black_list_map_id),"key",])
-        
-update_bpf_map(13)
+ 
+
+#update_bpf_map(input_val)
 
