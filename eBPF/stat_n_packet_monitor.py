@@ -71,7 +71,8 @@ int packet_monitor(struct __sk_buff *skb) {
     magic2 = ip -> dst;
 //    packet_cnt.update(&test_key, &magic2);
 
-    count = packet_cnt.lookup(&test_key); // this prevents transmitted packets from being counted
+
+    count = packet_cnt.lookup(&magic); // this prevents transmitted packets from being counted
     if (magic != SOURCE_IP)                 
     {
         if (count)  // check if this map exists
