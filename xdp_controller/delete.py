@@ -6,7 +6,7 @@ import time
 # Connect kafka producer here
 
 producer = KafkaProducer(bootstrap_servers=['localhost:9093'])
-topicName = 'xdpptest'
+topicName = 'controller'
 
 from ctypes import *
 import ctypes as ct
@@ -22,6 +22,6 @@ counter = 0
 while 1:
     counter = counter + 1
     producer.send(topicName,kafka_content)
-    if (counter == 20):
+    if (counter == 100):
         break
-
+producer.send(topicName,kafka_content)

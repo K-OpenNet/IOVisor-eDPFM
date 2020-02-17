@@ -56,6 +56,5 @@ while(1) :
         update_bpf_map(val1,val2,val3,val4)
     elif input_val[16] == 'd':
         delete_bpf_map(val1,val2,val3,val4)
-    
 
 
