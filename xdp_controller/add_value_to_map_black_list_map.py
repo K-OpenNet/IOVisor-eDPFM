@@ -2,6 +2,7 @@ import os
 import subprocess
 import pymongo import MongoClient
 import time
+from kafka import KafkaProducer
 
 # connecting to pymongo db
 
