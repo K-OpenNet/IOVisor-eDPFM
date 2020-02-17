@@ -1,3 +1,18 @@
 1. run hash_map_xdp_drop.py first
 2. run xdp_controller.py
 3. ip link set dev br-mellanox xdp off
+
+
+- 
+
+add_valueetc.
+- activated when receives kafka msg:
+
+   192 168 000 002 a
+or (activated)
+   192 168 000 002 d
+   (deactivated)
+
+- for some reason, msgs are not received by Kafka unless msgs are sent about 100 times simulatneously
+
+for sending msg, you can use : dbtest.py
