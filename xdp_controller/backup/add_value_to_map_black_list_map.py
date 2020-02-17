@@ -1,6 +1,6 @@
 import os
 import subprocess
-import pymongo import MongoClient
+from pymongo import MongoClient
 import time
 from kafka import KafkaProducer
 
