@@ -9,3 +9,9 @@ hash_map_xdp_drop.py
 backup_hash_map_xdp_drop.py & backup_hash_map_xdp_drop.c
 - Uses BPF hash, filters the packets if the ip address exists in the hash map's key.
 - Now need to test if it will work for multiple ip addresses in the blacklist
+
+add_value_etc.
+- perfect backup before implementing kafka
+- ex input) 192 168 000 002 a
+           or
+            192 168 000 002 d
