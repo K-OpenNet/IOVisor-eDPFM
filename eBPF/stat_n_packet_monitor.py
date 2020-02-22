@@ -1,11 +1,12 @@
 from bcc import BPF
 import time
+from ast import literal_eval
 
 # Connect kafka producer here
-
-#producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-#topicName = 'packetmonitor'
-
+'''
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+topicName = 'packetmonitor'
+'''
 # Network interface to be monoitored
 
 INTERFACE = "br-mellanox"
@@ -138,9 +139,9 @@ def print_skb_event(cpu, data, size):
     # trying to implement kafka producer - begin
     tester_kafka = str(skb_event.magic)
 #    print(tester_kafka[:4])
-    #producer.send(topicName, str('1')) # this one sends str 1 thru kafka
+#    producer.send(topicName, str('1')) # this one sends str 1 thru kafka
 #    print(tester_kafka)
-    tester_send = tester_send + ' ' + tester_kafka
+#    tester_send = tester_send + ' ' + tester_kafka
 #    producer.send(topicName, tester_kafka)
     # trying to implement kafka producer - end
     
@@ -157,6 +158,16 @@ bpf["skb_events"].open_perf_buffer(print_skb_event)
 black_list = bpf.get_table("black_list")    # retrieve blacklist list
     # retrieeve packet_cnt map
 packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
+
+def decimal_to_human(input_value):
+    input_value = int(input_value)
+    hex_value = hex(input_value)[2:]
+    pt3 = literal_eval((str('0x'+str(hex_value[-2:]))))
+    pt2 = literal_eval((str('0x'+str(hex_value[-4:-2]))))
+    pt1 = literal_eval((str('0x'+str(hex_value[-6:-4]))))
+    pt0 = literal_eval((str('0x'+str(hex_value[-8:-6]))))
+    result = str(pt0) + '.' + str(pt1) + '.' + str(pt2) + '.' + str(pt3)
+    return result
 
 #sys.stdout = open('myoutput.txt','w')
 
@@ -180,7 +191,7 @@ try:
         print(output_len)
         print('\n')
         for i in range(0,output_len):
-            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
+            print('address : ' + decimal_to_human(str(packet_cnt_output[i][0])[7:-2]) + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
         print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
