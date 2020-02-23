@@ -2,12 +2,9 @@ import os
 import subprocess
 from pymongo import MongoClient
 import time
-from kafka import KafkaConsumer
-
+from kafka import KafkaProducer
 
 # connecting to pymongo db
-
-consumer = KafkaConsumer('controller')
 
 client = MongoClient('localhost',27017)
 db = client['packetmonitor']
@@ -45,9 +42,8 @@ def delete_bpf_map(val1, val2, val3, val4):
     print('-del input value: ' + str(val1) + ' ' + str(val2) + ' ' + str(val3) + ' ' + str(val4))
     subprocess.call(['bpftool','map','delete','id',str(black_list_map_id),'key',str(val1),str(val2),str(val3),str(val4)])
 
-'''
 while(1) :
-    input_val = raw_input('enter mode and ip? -a : add / -d : del')
+    input_val = raw_input('enter mode and ip? -a : add / -d : del\n form : xxx xxx xxx xxx a >>>>')
 #input : 192 168 000 001 a
 #a is in the 16th value
 
@@ -60,16 +56,5 @@ while(1) :
         update_bpf_map(val1,val2,val3,val4)
     elif input_val[16] == 'd':
         delete_bpf_map(val1,val2,val3,val4)
-'''
 
-for msg in consumer:
-    msg = msg.value
-    val1 = str(msg)[:3]
-    val2 = str(msg)[4:7]
-    val3 = str(msg)[8:11]
-    val4 = str(msg)[12:15]
-    if msg[16] == 'a':
-        update_bpf_map(val1,val2,val3,val4)
-    elif msg[16] == 'd':
-        delete_bpf_map(val1,val2,val3,val4)
 
