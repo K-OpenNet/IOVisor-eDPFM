@@ -15,3 +15,13 @@ add_value_etc.
 - ex input) 192 168 000 002 a
            or
             192 168 000 002 d
+
+backup_add_value_to_map_black_list_map.py:
+* prior to launch : 
+	- run kafka zookeeper / kafka broker before launch
+	- run hash_map_xdp_drop.py [dev name] 
+- input has to be in a specific form. a combination of four three digits
+- ex input) 192 168 000 002 a
+	or
+            192 168 000 002 d
+
