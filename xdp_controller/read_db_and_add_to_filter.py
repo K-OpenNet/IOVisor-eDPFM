@@ -12,8 +12,9 @@ collection = db['bpf2']
 
 def print_value():
     print('\n\n\n printing the fucking values mother fucker')
-    for post in collection.find({'time':{'$lt':'20200223012953'}}):
+    for post in collection.find({'time':{'$lt':'20200223012953'}},{'pkt_num':'1'}):
         print(post)
+
 
 # to write a system command, refer to the line below:
 #subprocess.call(["apt-get","update"])
