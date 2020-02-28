@@ -76,6 +76,7 @@ while(1) :
     print(get_time())
 '''
 
+
 try:
     while True:
         result = 0
@@ -83,7 +84,8 @@ try:
         print(result)
         if (result > PKT_THRESHOLD):
             print('*** WARNING! ***')
-        
+            update_bpf_map(192,168,000,002)
+
         time.sleep(1)
 except KeyboardInterrupt:
     pass
