@@ -25,7 +25,6 @@ bpf_text = """
 #define ETH_HLEN 14
 
 BPF_PERF_OUTPUT(skb_events);    // has to be delcared outside any function
-BPF_ARRAY(black_list, u64, 5);
 BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in here
 // name / key / leaf / size
 
