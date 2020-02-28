@@ -155,7 +155,6 @@ BPF.attach_raw_socket(function_skb_matching, INTERFACE)
 
 bpf["skb_events"].open_perf_buffer(print_skb_event)
 
-black_list = bpf.get_table("black_list")    # retrieve blacklist list
     # retrieeve packet_cnt map
 packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
 
@@ -181,8 +180,8 @@ try:
 #        print(output_len)
         print('\n')
         for i in range(0,output_len):
-            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1])+';'+str(time.localtime()[2])+';'+str(time.localtime()[3])+';'+str(time.localtime()[4])+';'+str(time.localtime()[5]))
-            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1])+';'+str(time.localtime()[2])+';'+str(time.localtime()[3])+';'+str(time.localtime()[4])+';'+str(time.localtime()[5])
+            print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2))
+            kafka_content = str(packet_cnt_output[i][0])[7:-2] + ' ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2)
             producer.send(topicName, kafka_content)
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 

@@ -24,7 +24,7 @@ bpf_text = """
 #define ETH_HLEN 14
 
 BPF_PERF_OUTPUT(skb_events);    // has to be delcared outside any function
-BPF_ARRAY(black_list, u64, 5);
+//BPF_ARRAY(black_list, u64, 5);
 BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in here
 // name / key / leaf / size
 
@@ -155,7 +155,7 @@ BPF.attach_raw_socket(function_skb_matching, INTERFACE)
 
 bpf["skb_events"].open_perf_buffer(print_skb_event)
 
-black_list = bpf.get_table("black_list")    # retrieve blacklist list
+#black_list = bpf.get_table("black_list")    # retrieve blacklist list
     # retrieeve packet_cnt map
 packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
 
