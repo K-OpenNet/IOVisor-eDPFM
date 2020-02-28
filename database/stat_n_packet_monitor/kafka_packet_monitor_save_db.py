@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 import sys
 from ast import literal_eval
 from pymongo import MongoClient
-
+import pytz
 #define information about kafka
 
 bootstrap_servers = ['210.125.84.133:9092']
@@ -17,7 +17,7 @@ def insert_into_db(src_ip, pkt_num, time):
     db = client.packetmonitor    # database name
     collection = db.bpf2    # document name
     collection.insert_one({'src_ip':src_ip,'pkt_num':pkt_num,'time':time})
-
+    
 # database test - END
 
 def kafka_consumer():
