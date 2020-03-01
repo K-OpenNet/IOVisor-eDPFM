@@ -25,3 +25,8 @@ backup_add_value_to_map_black_list_map.py:
 	or
             192 168 000 002 d
 
+backup_read_db_and_add_to_filter.py :
+- can reach mongodb but only reads rcved packet numbers
+- Need to make it read ip_address as well
+- Need to make it distinguish which servers to actually enable XDP on (Right now can't distinguish servers and send them individual commands)
+
