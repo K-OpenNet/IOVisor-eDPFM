@@ -1,11 +1,7 @@
 from pymongo import MongoClient
 import time
-from kafka import KafkaProducer
-from kafka.errors import KafkaError
 import subprocess
-
-producer = KafkaProducer(bootstrap_servers=['localhost:9093'])
-topicName = 'controller'
+import array
 
 client = MongoClient()
 client = MongoClient('localhost',27017)
@@ -36,12 +32,28 @@ print('current time : ' + str(current_time))
 
 xdp_status = 0  # mark xdp status
 
-while(1):
-    tot_pkt = 0
-    counter = 0
-    for value in db.bpf2.find({'time':{ '$lt':'2020;2;16;7;28;2', '$gt':'2020;2;16;7;27;57'}},{'pkt_num':1,'_id':0}): # lt boundary is not includeda
-        time.sleep(1)
-        tot_pkt = tot_pkt + int(str(value)[15:-2])
+tot_pkt = 0
+counter = 0
+#for value in db.bpf2.find({'pkt_num':1,'_id':0}): # lt boundary is not includeda
+for value in db.bpf2.find({},{'src_ip':1,'_id':0,'pkt_num':1}):
+    address_array = ''
+    pkt_array = ''
+    temp = str(value)[14:]
+    ip_scissors = temp.find("\'")
+    ip_address = temp[:ip_scissors]
+    pkt_scissors = temp.find("u'",ip_scissors+14)
+    pkt_num = temp[pkt_scissors+2:-2]
+    print(temp + ' ' + 'ip : ' + ip_address + ' ' + 'pkt_num : ' + pkt_num)
+    for i in address_array:
+        if i == ip_address: # if the ip address exists within the array
+            print(temp[pkt_scissors+2:-2])
+            pkt_array[counter] = pkt_array[counter] + pkt_num
+        elif i != ip_address:
+            counter = counter + 1
+
+    
+    
+'''
     if (tot_pkt > THRESHOLD and xdp_status == 0):   # if total packet exceeds the threshold and xdp_status is turned off, turn it on
         while(counter < 100):
     #        producer.send(topicName,'192 168 000 002 a')
@@ -52,7 +64,7 @@ while(1):
             producer.send(topicName,'192 168 000 002 d')
             counter = counter + 1
     print('total pkt : ' +  str(tot_pkt))
-
+'''
 
 # after connecting producer.send(), all I have to to do is make XDP controller receive the msg and turn on xdp 
 

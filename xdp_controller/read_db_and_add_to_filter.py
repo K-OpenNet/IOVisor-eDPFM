@@ -19,8 +19,8 @@ def print_value():
 
     current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
     global result
-    for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'pkt_num':1,'_id':0}):
-#        print(str(post)[15:-2])
+    for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'src_ip':1,'_id':0,'pkt_num':1}):
+        print(str(post)[15:-2])
 #        print(post)
         result = result + int(str(post)[15:-2])
 
@@ -30,7 +30,10 @@ def print_value():
 
 entire_bpf_map_info = str(subprocess.check_output(["bpftool","map","show",]))
 
+
+# remove the annotation block and integratre this code later 
 # save black_list map id - begin
+'''
 num = entire_bpf_map_info.find("black_list")
 test = num - 30
 test2 = entire_bpf_map_info[test:num]
@@ -40,6 +43,7 @@ num3 = test3.find(':')
 test4 = test3[:num3]
 black_list_map_id = int(test4)
 print('- targetted bpf map id : ' + str(test4))
+'''
 #save black_list map id - end
 
 # update bpf map value - begin
@@ -76,12 +80,48 @@ while(1) :
     print(get_time())
 '''
 
+ip_address = []
+pkt_num = []
+
+def add_to_ip_saver(addr, num):
+    global ip_address
+    global pkt_num
+
+    if (addr in ip_address):        # when returns True
+        index = ip_address.index(addr)
+        pkt_num[index] = str(int(pkt_num[index]) + int(num))
+    elif (not addr in ip_address):  # when returns False
+        ip_address.append(addr)
+        pkt_num.append(num)
+
+def search_db():
+    print('search db init')
+    global ip_address
+    global pkt_num
+    current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
+
+    current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
+    for value in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'src_ip':1,'_id':0,'pkt_num':1}):
+        temp = str(value)[14:]
+        print('getting here')
+        ip_scissors = temp.find("\'")
+        ip_save = temp[:ip_scissors]
+        pkt_scissors = temp.find("u'",ip_scissors+14)
+        pkt_save = temp[pkt_scissors+2:-2]
+        add_to_ip_saver(ip_save, pkt_save)
+        
+        print('- ip address : ')
+        print(ip_address)
+        print('- pkt_num : ')
+        print(pkt_num)
+    ip_address = []
+    pkt_num = []
+        
 
 try:
     while True:
         result = 0
-        print_value()
-        print(result)
+        search_db()
         # add action here
         '''
         if (result > PKT_THRESHOLD):
