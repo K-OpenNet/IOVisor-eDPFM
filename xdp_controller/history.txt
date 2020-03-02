@@ -30,3 +30,6 @@ backup_read_db_and_add_to_filter.py :
 - Need to make it read ip_address as well
 - Need to make it distinguish which servers to actually enable XDP on (Right now can't distinguish servers and send them individual commands)
 
+backup_2_read_db_and_add_to_filter.py :
+- can distinguish servers and their respective incoming packets
+- now need to add xdp controller
