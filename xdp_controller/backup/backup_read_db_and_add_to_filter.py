@@ -20,7 +20,7 @@ def print_value():
     current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
     global result
     for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'pkt_num':1,'_id':0}):
-#        print(str(post)[15:-2])
+        print(str(post)[15:-2])
 #        print(post)
         result = result + int(str(post)[15:-2])
 
@@ -83,11 +83,9 @@ try:
         print_value()
         print(result)
         # add action here
-        '''
         if (result > PKT_THRESHOLD):
             print('*** WARNING! ***')
             update_bpf_map(192,168,000,002)
-        '''
         time.sleep(1)
 except KeyboardInterrupt:
     pass

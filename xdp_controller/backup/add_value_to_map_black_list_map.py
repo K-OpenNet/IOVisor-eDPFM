@@ -42,6 +42,27 @@ def delete_bpf_map(val1, val2, val3, val4):
     print('-del input value: ' + str(val1) + ' ' + str(val2) + ' ' + str(val3) + ' ' + str(val4))
     subprocess.call(['bpftool','map','delete','id',str(black_list_map_id),'key',str(val1),str(val2),str(val3),str(val4)])
 
+ip_address = []
+pkt_num = []
+
+def add_to_ip_saver(addr, num):
+        counter = 0
+        global ip_address
+        global pkt_num
+        print(addr in ip_address)
+        if (addr in ip_address):        # when returns True
+                print('truedayo')
+                index = ip_address.index(addr)
+                pkt_num[index] = str(int(pkt_num[index]) + int(num))
+        elif (not addr in ip_address):  # when returns False
+                ip_address.append(addr)
+                print('falsedayo')
+                pkt_num.append(num)
+        # now the IP address has been added, now need to add the packet number
+        print('mos burger')
+        print(ip_address.index(addr))
+
+
 while(1) :
     input_val = raw_input('enter mode and ip? -a : add / -d : del\n form : xxx xxx xxx xxx a >>>>')
 #input : 192 168 000 001 a
