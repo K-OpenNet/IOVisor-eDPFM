@@ -11,7 +11,7 @@ import pyroute2
 import time
 import sys
 from ctypes import *
-
+from kafka import KafkaConsumer
 
 def convert_ip_to_bin(data):
         data =  "{0:b}".format(data.value).zfill(28)
@@ -46,7 +46,7 @@ if len(sys.argv) == 2:
 elif len(sys.argv) == 3:
     device = sys.argv[2]
 
-_xdp_file = "hash_map_xdp_drop.c"
+_xdp_file = "backup_hash_map_xdp_drop.c"
 
 maptype = "percpu_array"
 if len(sys.argv) == 3:
@@ -84,7 +84,7 @@ else:
     ip.tc("add-filter", "bpf", idx, ":1", fd=fn.fd, name=fn.name,
           parent="ffff:fff2", classid=1, direct_action=True)
 
-hash_addr = b.get_table("hash_addr")
+hash_addr = b.get_table("black_list")
 
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")
