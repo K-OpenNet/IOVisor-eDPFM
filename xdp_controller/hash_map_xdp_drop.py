@@ -11,7 +11,7 @@ import pyroute2
 import time
 import sys
 from ctypes import *
-
+from kafka import KafkaConsumer
 
 def convert_ip_to_bin(data):
         data =  "{0:b}".format(data.value).zfill(28)

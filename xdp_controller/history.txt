@@ -33,3 +33,6 @@ backup_read_db_and_add_to_filter.py :
 backup_2_read_db_and_add_to_filter.py :
 - can distinguish servers and their respective incoming packets
 - now need to add xdp controller
+
+backup_3_read_db_and_add_to_filter.py :
+- final form before implementing kafka functionality (rcv msg from the controller)
