@@ -12,6 +12,33 @@ import time
 import sys
 from ctypes import *
 from kafka import KafkaConsumer
+import os
+import subprocess
+
+bootstrap_servers = ['210.117.251.25'] # k-post
+topicName = 'bpf2'
+
+consumer = KafkaConsumer(topicName, bootstrap_servers = bootstrap_servers)
+
+entire_bpf_map_info = str(subprocess.check_output(["bpftool","map","show",]))
+
+def update_bpf_map(val1, val2, val3, val4):
+    print("-add input value: " + str(val1) + ' ' + str(val2) + ' ' + str(val3) + ' ' + str(val4))
+    subprocess.call(["bpftool","map","update","id",str(black_list_map_id),"key",str(val1),str(val2),str(val3),str(val4),"value","01"])
+#    print("bpf map with id " + str(black_list_map_id) + "updated...")
+#    subprocess.call(["bpftool","map","lookup","id",str(black_list_map_id),"key",])
+
+def delete_bpf_map(val1, val2, val3, val4):
+    print('-del input value: ' + str(val1) + ' ' + str(val2) + ' ' + str(val3) + ' ' + str(val4))
+    subprocess.call(['bpftool','map','delete','id',str(black_list_map_id),'key',str(val1),str(val2),str(val3),str(val4)])
+
+def kafka_consumer():
+    print('kafka consumer initiated....')
+    try:
+        for message in consumer:
+            print(message.value)
+    except KeybaordInterrupt:
+            sys.exit()
 
 def convert_ip_to_bin(data):
         data =  "{0:b}".format(data.value).zfill(28)
@@ -27,7 +54,6 @@ def convert_ip_to_bin(data):
         four = ''.join(str((int((data[0:4]),2))))
         back = one +'.' + two + '.'+ three +'.' + four
         return back
-
 
 flags = 0
 def usage():
@@ -89,6 +115,20 @@ hash_addr = b.get_table("black_list")
 prev = [0] * 256
 print("Printing drops per IP protocol-number, hit CTRL+C to stop")
 #ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
+
+# remove the annotation block and integratre this code later
+# save black_list map id - begin
+num = entire_bpf_map_info.find("black_list")
+test = num - 30
+test2 = entire_bpf_map_info[test:num]
+num2 = test2.find('\n')
+test3 = test2[num2:]
+num3 = test3.find(':')
+test4 = test3[:num3]
+black_list_map_id = int(test4)
+print('- targetted bpf map id : ' + str(test4))
+#save black_list map id - end
+
 while 1:
     print('filtering...')
     time.sleep(10)
