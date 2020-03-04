@@ -37,16 +37,6 @@ def kafka_consumer():
     try:
         for message in consumer:
             print(message.value)
-            input_val = str(message.value)
-            val1 = input_val[:3]
-            val2 = input_val[4:7]
-            val3 = input_val[8:11]
-            val4 = input_val[12:15]
-
-            if input_val[16] == 'a':
-                update_bpf_map(val1,val2,val3,val4)
-            elif input_val[16] == 'd':
-                delete_bpf_map(val1,val2,val3,val4)
     except KeybaordInterrupt:
             sys.exit()
 
@@ -139,9 +129,6 @@ black_list_map_id = int(test4)
 print('- targetted bpf map id : ' + str(test4))
 #save black_list map id - end
 
-kafka_consumer()
-
-'''
 while 1:
     print('filtering...')
     time.sleep(10)
@@ -152,7 +139,7 @@ while 1:
 #    except KeyboardInterrupt:
 #        print("Removing filter from device")
 #        break;
-'''
+
 if mode == BPF.XDP:
     b.remove_xdp(device, flags)
 else:
