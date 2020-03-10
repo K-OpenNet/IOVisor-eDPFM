@@ -5,7 +5,7 @@ import time
 
 # Connect kafka producer here
 
-producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
+producer = KafkaProducer(bootstrap_servers=['210.117.251.25:9092'])
 topicName = 'packetmonitor'
 
 # Network interface to be monoitored
