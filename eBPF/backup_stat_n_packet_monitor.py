@@ -1,11 +1,10 @@
 from bcc import BPF
-from kafka import KafkaProducer
-from kafka.errors import KafkaError
 import time
+from ast import literal_eval
 
 # Connect kafka producer here
 '''
-producer = KafkaProducer(bootstrap_servers=['210.117.251.25:9092'])
+producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
 topicName = 'packetmonitor'
 '''
 # Network interface to be monoitored
@@ -25,7 +24,8 @@ bpf_text = """
 #define ETH_HLEN 14
 
 BPF_PERF_OUTPUT(skb_events);    // has to be delcared outside any function
-BPF_HASH(packet_cnt, u64, long, 256); // let's try to save the number of IPs in here
+//BPF_ARRAY(black_list, u64, 5);
+BPF_HASH(packet_cnt, u32, long, 256); // let's try to save the number of IPs in here
 // name / key / leaf / size
 
 int packet_monitor(struct __sk_buff *skb) {
@@ -39,7 +39,6 @@ int packet_monitor(struct __sk_buff *skb) {
     u32 test_key2 = 3232235521;
     long* count = 0;
     long one = 1;
-    u64 add_test = 0;
     
     // trial - begin
 
@@ -71,18 +70,19 @@ int packet_monitor(struct __sk_buff *skb) {
 
     magic = ip -> src;
     magic2 = ip -> dst;
-    add_test = magic;
-    add_test = add_test << 32;
-    add_test = add_test + daddr;
 //    packet_cnt.update(&test_key, &magic2);
 
-    count = packet_cnt.lookup(&add_test); // this prevents transmitted packets from being counted
-    if (count)  // check if this map exists
-        *count += 1;
-    else        // if the map for the key doesn't exist, create one
-        {
-            packet_cnt.update(&add_test, &one);
-        }
+
+    count = packet_cnt.lookup(&magic); // this prevents transmitted packets from being counted
+    if (magic != SOURCE_IP)                 
+    {
+        if (count)  // check if this map exists
+            *count += 1;
+        else        // if the map for the key doesn't exist, create one
+            {
+                packet_cnt.update(&magic, &one);
+            }
+    }
 
     // THIS PART IS ONLY FOR TESTING - BEGIN ; DELETE when the test is over
 
@@ -141,7 +141,7 @@ def print_skb_event(cpu, data, size):
 #    print(tester_kafka[:4])
 #    producer.send(topicName, str('1')) # this one sends str 1 thru kafka
 #    print(tester_kafka)
-    tester_send = tester_send + ' ' + tester_kafka
+#    tester_send = tester_send + ' ' + tester_kafka
 #    producer.send(topicName, tester_kafka)
     # trying to implement kafka producer - end
     
@@ -155,8 +155,19 @@ BPF.attach_raw_socket(function_skb_matching, INTERFACE)
 
 bpf["skb_events"].open_perf_buffer(print_skb_event)
 
+#black_list = bpf.get_table("black_list")    # retrieve blacklist list
     # retrieeve packet_cnt map
 packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
+
+def decimal_to_human(input_value):
+    input_value = int(input_value)
+    hex_value = hex(input_value)[2:]
+    pt3 = literal_eval((str('0x'+str(hex_value[-2:]))))
+    pt2 = literal_eval((str('0x'+str(hex_value[-4:-2]))))
+    pt1 = literal_eval((str('0x'+str(hex_value[-6:-4]))))
+    pt0 = literal_eval((str('0x'+str(hex_value[-8:-6]))))
+    result = str(pt0) + '.' + str(pt1) + '.' + str(pt2) + '.' + str(pt3)
+    return result
 
 #sys.stdout = open('myoutput.txt','w')
 
@@ -175,30 +186,16 @@ try:
 #        print("this is tester send")
         time.sleep(OUTPUT_INTERVAL)
         packet_cnt_output = packet_cnt.items()
-#        print(packet_cnt_output)
+        print(packet_cnt_output)
         output_len = len(packet_cnt_output)
-#        print(output_len)
+        print(output_len)
         print('\n')
         for i in range(0,output_len):
- #           print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2))
-
-            # tester - begin
-            tester = int(str(packet_cnt_output[i][0])[8:-2])
-            print('raw : ' + str(packet_cnt_output[i][0])[8:-2])
-            tester = int(str(bin(tester))[2:]) # raw file
-            print('test : ' + str(tester)) # raw file
-            print('length : ' + str(len(str(tester))))
-            src = int(str(tester)[:32],2) # part1 
-            dst = int(str(tester)[32:],2)
-            pkt_num = str(packet_cnt_output[i][1])[7:-1]
-
-            kafka_content = str(src) + ' ' + str(dst) + ' ' + pkt_num + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2)
-            print(kafka_content)
-            # tester - end : enable producer.send below
-
-#            producer.send(topicName, kafka_content) 
+            print('address : ' + decimal_to_human(str(packet_cnt_output[i][0])[7:-2]) + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1]) + ' ' + str(time.time())
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
+        print('done')
         packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
+#        producer.send(topicName, tester_send)
         
 except KeyboardInterrupt:
     sys.stdout.close()
