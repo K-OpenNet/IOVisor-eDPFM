@@ -5,27 +5,26 @@ from pymongo import MongoClient
 import pytz
 #define information about kafka
 
-bootstrap_servers = ['210.125.84.133:9092']
-topicName = 'packetmonitor'
+bootstrap_servers_bpf2 = ['210.125.84.133:9092']
+topicName_bpf2 = 'packetmonitor'
 
-consumer = KafkaConsumer(topicName, bootstrap_servers = bootstrap_servers)
+consumer_bpf2 = KafkaConsumer(topicName, bootstrap_servers = bootstrap_servers_bpf2)
 
 # database test - BEGIN
 
-def insert_into_db(src_ip, dst_ip, pkt_num, time):
+def insert_into_db(src_ip, pkt_num, time):
     client = MongoClient()
     db = client.packetmonitor    # database name
     collection = db.bpf2    # document name
-    collection.insert_one({'src_ip':src_ip,'dst_ip':dst_ip,'pkt_num':pkt_num,'time':time})
+    collection.insert_one({'src_ip':src_ip,'pkt_num':pkt_num,'time':time})
     
 # database test - END
 
 def kafka_consumer():
     print("kafka consumer test...")
     try :
-        for message in consumer:
+        for message in consumer_bpf2:
             value = message.value
-            print(value)
             length = len(value)
             counter = 0
             for i in value[::-1]: # to find time in the string, reverse the string for iterated lookup
@@ -33,14 +32,12 @@ def kafka_consumer():
                     break
                 else:
                     counter = counter + 1
-            #test_offset = 11
-            #source_ip = decimal_to_human(str(value[:test_offset+10]))
-            pkt_num = str(value[22:-counter])
-            source_ip = decimal_to_human(value[:10])
-            destination_ip = decimal_to_human(value[11:21])
+
+            source_ip = decimal_to_human(str(value[:10]))
+            pkt_num = str(value[11:-counter])
             time = str(value[-counter:])
-            print('src_ip : ' + source_ip + ' dst_ip : ' + destination_ip + ' packet : ' + pkt_num + 'time : ' + str(value[-counter:]))
-            insert_into_db(source_ip, destination_ip, pkt_num, time)
+            print('source ip : ' + source_ip + 'packet : ' + pkt_num) + 'time : ' + str(value[-counter:])
+            insert_into_db(source_ip, pkt_num, time)
     except KeyboardInterrupt:
         sys.exit()
 
