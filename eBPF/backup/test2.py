@@ -106,6 +106,8 @@ try:
         output_len = len(packet_cnt_output)
         print('\n')
         for i in range(0,output_len):
+            if (len(str(packet_cnt_output[i][0]))) != 30:
+                continue
             tester = int(str(packet_cnt_output[i][0])[8:-2]) # initial output omitted from the kernel space program
             tester = int(str(bin(tester))[2:]) # raw file
             src = int(str(tester)[:32],2) # part1 
