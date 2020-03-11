@@ -18,6 +18,7 @@ bpf_text = """
 #define IP_ICMP 1
 #define ETH_HLEN 14
 
+BPF_PERF_OUTPUT(skb_events);
 BPF_HASH(packet_cnt, u64, long, 256); 
 
 int packet_monitor(struct __sk_buff *skb) {
@@ -26,7 +27,7 @@ int packet_monitor(struct __sk_buff *skb) {
     u32 daddr;
     long* count = 0;
     long one = 1;
-    u64 add_test = 0;
+    u64 pass_value = 0;
     
     struct ethernet_t *ethernet = cursor_advance(cursor, sizeof(*ethernet));
     if (!(ethernet -> type == 0x0800)) {    
@@ -46,20 +47,17 @@ int packet_monitor(struct __sk_buff *skb) {
     saddr = ip -> src;
     daddr = ip -> dst;
 
-    add_test = saddr;
-    add_test = add_test << 32;
-    add_test = add_test + daddr;
+    pass_value = saddr;
+    pass_value = pass_value << 32;
+    pass_value = pass_value + daddr;
 
-    count = packet_cnt.lookup(&add_test); 
+    count = packet_cnt.lookup(&pass_value); 
     if (count)  // check if this map exists
         *count += 1;
     else        // if the map for the key doesn't exist, create one
         {
-            packet_cnt.update(&add_test, &one);
+            packet_cnt.update(&pass_value, &one);
         }
-
-
-
     return -1;
 }
 
@@ -103,12 +101,9 @@ print("=========================packet monitor=============================\n")
 
 try:
     while True :
-#        print("this is tester send")
         time.sleep(OUTPUT_INTERVAL)
         packet_cnt_output = packet_cnt.items()
-#        print(packet_cnt_output)
         output_len = len(packet_cnt_output)
-#        print(output_len)
         print('\n')
         for i in range(0,output_len):
             tester = int(str(packet_cnt_output[i][0])[8:-2]) # initial output omitted from the kernel space program
@@ -126,4 +121,5 @@ try:
 except KeyboardInterrupt:
     sys.stdout.close()
     pass
+
 
