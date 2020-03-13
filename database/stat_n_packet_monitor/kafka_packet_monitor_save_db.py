@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import pytz
 #define information about kafka
 
-bootstrap_servers = ['210.125.84.133:9092']
+bootstrap_servers = ['210.117.251.25:9092']
 topicName = 'packetmonitor'
 
 consumer = KafkaConsumer(topicName, bootstrap_servers = bootstrap_servers)

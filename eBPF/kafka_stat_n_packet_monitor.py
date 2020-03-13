@@ -24,7 +24,6 @@ bpf_text = """
 
 BPF_PERF_OUTPUT(skb_events);    // has to be delcared outside any function
 BPF_HASH(packet_cnt, u64, long, 256); // let's try to save the number of IPs in here
-// name / key / leaf / size
 
 int packet_monitor(struct __sk_buff *skb) {
     u64 SOURCE_IP = 3232235521; 
@@ -39,10 +38,6 @@ int packet_monitor(struct __sk_buff *skb) {
     long one = 1;
     u64 add_test = 0;
     
-    // trial - begin
-
-    u64 magic = 9999999;
-    u64 magic2 = 9;
     
     struct ethernet_t *ethernet = cursor_advance(cursor, sizeof(*ethernet));
     if (!(ethernet -> type == 0x0800)) {    
@@ -50,7 +45,6 @@ int packet_monitor(struct __sk_buff *skb) {
     }
 
     struct ip_t *ip = cursor_advance(cursor, sizeof(*ip));
-    /*
     if (ip->nextp != IP_TCP) 
     {
         if (ip -> nextp != IP_UDP) 
@@ -59,20 +53,14 @@ int packet_monitor(struct __sk_buff *skb) {
                 return 0; 
         }
     }
-    */
     
-//    skb_events.perf_submit_skb(skb, skb -> len, &magic, sizeof(magic));
-
     saddr = ip -> src;
     daddr = ip -> dst;
     ttl = ip -> ttl;
 
-    magic = ip -> src;
-    magic2 = ip -> dst;
-    add_test = magic;
+    add_test = saddr;
     add_test = add_test << 32;
     add_test = add_test + daddr;
-//    packet_cnt.update(&test_key, &magic2);
 
     count = packet_cnt.lookup(&add_test); // this prevents transmitted packets from being counted
     if (count)  // check if this map exists
@@ -82,22 +70,6 @@ int packet_monitor(struct __sk_buff *skb) {
             packet_cnt.update(&add_test, &one);
         }
 
-    // THIS PART IS ONLY FOR TESTING - BEGIN ; DELETE when the test is over
-
-//    packet_cnt.update(&test_key2, &one);
-
-    // THIS PART IS ONLY FOR TESTING - END
-
-
-    skb_events.perf_submit_skb(skb, skb->len, &magic, sizeof(magic)); // this one parses number as a hex to the user space
-    skb_events.perf_submit_skb(skb, skb->len, &magic2, sizeof(magic2)); // can send multiple values like this
-    
-    // The last four attributes the user space receives are the values retrieved from the kernel space
-    
-
-//    bpf_trace_printk("saddr = %llu, daddr = %llu, ttl = %llu", saddr, daddr, ttl); // only three arguments can be passed using printk
-
-//    bpf_trace_printk("Incoming packet!!\\n");
     return -1;
 }
 
@@ -151,8 +123,6 @@ function_skb_matching = bpf.load_func("packet_monitor", BPF.SOCKET_FILTER)
 
 BPF.attach_raw_socket(function_skb_matching, INTERFACE)
 
-bpf["skb_events"].open_perf_buffer(print_skb_event)
-
     # retrieeve packet_cnt map
 packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
 
@@ -162,13 +132,6 @@ print("=========================packet monitor=============================\n")
 
 try:
     while True :
-        # ENABLE THIS PART TO ENABLE SINGLE PACKET MONITOR - BEGIN (2/2)
-        '''
-        bpf.perf_buffer_poll()  # value = bpf.perf_buffer_poll() function does not return any function and therefore, doesn't work
-        print (tester_send)
-        tester_send = ''
-        '''
-        # ENABLE THIS PART TO ENABLE SINGLE PACKET MONITOR - END (2/2)
 
 #        print("this is tester send")
         time.sleep(OUTPUT_INTERVAL)
@@ -178,8 +141,8 @@ try:
 #        print(output_len)
         print('\n')
         for i in range(0,output_len):
- #           print('address : ' + str(packet_cnt_output[i][0])[7:-2] + ' packet number : ' + str(packet_cnt_output[i][1])[7:-1] + ' ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2))
-
+            if (len(str(packet_cnt_output[i][0]))) != 30:
+                continue
             tester = int(str(packet_cnt_output[i][0])[8:-2])
             print('raw : ' + str(packet_cnt_output[i][0])[8:-2])
             tester = int(str(bin(tester))[2:]) # raw file

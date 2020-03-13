@@ -112,7 +112,7 @@ try:
             dst = int(str(tester)[32:],2)
             pkt_num = str(packet_cnt_output[i][1])[7:-1]
 
-            monitor_result = 'source address : ' + decimal_to_human(str(src)) + ' ' + 'destination address : ' + decimal_to_human(str(dst)) + ' ' + pkt_num + ' ' + 'time : ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2)
+            monitor_result = str(src) + ' ' + str(dst) + ' ' + pkt_num + ' ' + 'time : ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2)
             print(monitor_result)
 
             # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.

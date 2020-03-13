@@ -135,7 +135,7 @@ num2 = test2.find('\n')
 test3 = test2[num2:]
 num3 = test3.find(':')
 test4 = test3[:num3]
-black_list_map_id = int(test4)
+black_list_map_id = int(test4)+1
 print('- targetted bpf map id : ' + str(test4))
 #save black_list map id - end
 
