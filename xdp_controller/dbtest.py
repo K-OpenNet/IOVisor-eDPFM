@@ -35,9 +35,10 @@ xdp_status = 0  # mark xdp status
 tot_pkt = 0
 counter = 0
 #for value in db.bpf2.find({'pkt_num':1,'_id':0}): # lt boundary is not includeda
-for value in db.bpf2.find({},{'src_ip':1,'_id':0,'pkt_num':1}):
+for value in db.bpf2.find({},{'src_ip':1,'dst_ip':1,'_id':0,'pkt_num':1}):
     address_array = ''
     pkt_array = ''
+    '''
     temp = str(value)[14:]
     ip_scissors = temp.find("\'")
     ip_address = temp[:ip_scissors]
@@ -50,6 +51,13 @@ for value in db.bpf2.find({},{'src_ip':1,'_id':0,'pkt_num':1}):
             pkt_array[counter] = pkt_array[counter] + pkt_num
         elif i != ip_address:
             counter = counter + 1
+    '''
+    src_ip = str(value)[14:25]
+    dst_ip = str(value)[41:52]
+    pkt_num = str(value)[69:-3]
+    print('src_ip : ' + src_ip + '| dst_ip : ' + dst_ip + '| pkt_num : ' + pkt_num)
+
+    
 
     
     

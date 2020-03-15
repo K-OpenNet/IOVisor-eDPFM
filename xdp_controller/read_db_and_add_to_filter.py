@@ -4,9 +4,21 @@ from pymongo import MongoClient
 import time
 from kafka import KafkaProducer
 
+IP_BPF1 = '210.125.84.132'
+IP_BPF2 = '210.125.84.133'
+IP_BPF2_1 = '192.168.1.1'
+IP_BPF3 = '210.125.84.141'
+IP_CUBE1 = '210.125.84.221'
+IP_CUBE2 = '210.125.84.222'
+IP_CUBE3 = '210.125.84.223'
+IP_CUBE4 = '210.125.84.224'
+
+producer_bpf2 = KafkaProducer(bootstrap_servers = ['210.125.84.133:9092'])
+topicName = 'xdpcontroller'
+
 # connecting to pymongo db
 
-PKT_THRESHOLD = 100
+PKT_THRESHOLD = 10
 
 client = MongoClient('localhost',27017)
 db = client['packetmonitor']
@@ -83,15 +95,15 @@ while(1) :
 ip_address = []
 pkt_num = []
 
-def add_to_ip_saver(addr, num):
+def add_to_ip_saver(addr_merged, num):
     global ip_address
     global pkt_num
 
-    if (addr in ip_address):        # when returns True
-        index = ip_address.index(addr)
+    if (addr_merged in ip_address):        # when returns True
+        index = ip_address.index(addr_merged)
         pkt_num[index] = str(int(pkt_num[index]) + int(num))
-    elif (not addr in ip_address):  # when returns False
-        ip_address.append(addr)
+    elif (not addr_merged in ip_address):  # when returns False
+        ip_address.append(addr_merged)
         pkt_num.append(num)
 
 def search_db():
@@ -101,19 +113,31 @@ def search_db():
     current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
 
     current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
-    for value in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'src_ip':1,'_id':0,'pkt_num':1}):
-        temp = str(value)[14:]
-        print('getting here')
-        ip_scissors = temp.find("\'")
-        ip_save = temp[:ip_scissors]
-        pkt_scissors = temp.find("u'",ip_scissors+14)
-        pkt_save = temp[pkt_scissors+2:-2]
-        add_to_ip_saver(ip_save, pkt_save)
+    for value in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'src_ip':1,'dst_ip':1,'_id':0,'pkt_num':1}):
+        src_ip = str(value)[14:25]
+        dst_ip = str(value)[41:52]
+        addr_merged = src_ip + '/' + dst_ip
+        num = str(value)[69:-3]
+        add_to_ip_saver(addr_merged, num)
+#        print(ip_address)
+#        print(pkt_num)
         
-        print('- ip address : ')
-        print(ip_address)
-        print('- pkt_num : ')
-        print(pkt_num)
+        value_counter = 0
+    for value in pkt_num:
+        if (int(value) > int(PKT_THRESHOLD)):
+            print('kuda')
+            scissors = ip_address[value_counter].find('/')
+            tgt_src_ip = ip_address[value_counter][:scissors]
+            tgt_dst_ip = ip_address[value_counter][scissors+1:]
+            print(tgt_src_ip)
+            print(tgt_dst_ip)
+
+            if (tgt_src_ip) == IP_BPF2 or IP_BPF2_1:
+                print('sending kafka msg')
+                producer_bpf2.send(topicName,'test_msg')
+
+
+        value_counter = value_counter + 1
     ip_address = []
     pkt_num = []
         
@@ -122,12 +146,6 @@ try:
     while True:
         result = 0
         search_db()
-        # add action here
-        '''
-        if (result > PKT_THRESHOLD):
-            print('*** WARNING! ***')
-            update_bpf_map(192,168,000,002)
-        '''
         time.sleep(1)
 except KeyboardInterrupt:
     pass
