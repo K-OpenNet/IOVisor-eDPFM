@@ -20,35 +20,44 @@ collection = db['bpf2']
 result = 0
 
 def print_value():
-    current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
-
-    current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
-    global result
- 
-    for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'_id':0,'dst_ip':1,'pkt_num':1}):
         num_edgebox1 = 0
         num_edgebox2 = 0
         num_kube1 = 0
         num_kube2 = 0
         num_master = 0
-        print(post)
-        temp_ip = str(post)[14:26]
-        print('temp ip ' + temp_ip)
-        counter = 0
-        temp = str(post)[::-1]
-        for i in temp:
-            if i == ':':
-                break
-            else:
-                counter = counter+1
+        current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
 
-        temp_pkt_num = str(post)[-counter+3:-2]
-        print('temp_pkt_num : ' + str(temp_pkt_num))
-        print(post)
+        current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
+        global result
+ 
+        for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'_id':0,'dst_ip':1,'pkt_num':1}):
+            temp_ip = str(post)[14:26]
+            counter = 0
+            temp = str(post)[::-1]
+            for i in temp:
+                if i == ':':
+                    break
+                else:
+                    counter = counter+1
 
-        
-    
+            temp_pkt_num = int(str(post)[-counter+3:-2])
 
+            if (temp_ip == IP_EDGEBOX1):
+                num_edgebox1 = num_edgebox1 + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX2):
+                num_edgebox2 = num_edgebox2 + temp_pkt_num
+            elif (temp_ip == IP_KUBE1):
+                num_kube1 = num_kube1 + temp_pkt_num
+            elif (temp_ip == IP_KUBE2):
+                num_kube2 = num_kube2 + temp_pkt_num
+            elif (temp_ip == IP_MASTER):
+                num_master = num_master + temp_pkt_num
+
+        print("edgebox1 " + str(num_edgebox1))
+        print("edgebox2 " + str(num_edgebox2))
+        print("kube1 " + str(num_kube1))
+        print("kube2 " + str(num_kube2))
+        print("master " + str(num_master))
 #        print(post)
 #        result = result + int(str(post)[15:-2])
 
