@@ -2,7 +2,6 @@ import os
 import subprocess
 from pymongo import MongoClient
 import time
-url : 127.0.0.1
 import plotly.graph_objects as go
 import sys
 import dash
@@ -21,6 +20,28 @@ IP_EDGEBOX2_VM2 = '192.168.122.134'
 IP_EDGEBOX2_VM3 = '192.168.122.142'
 IP_EDGEBOX1_VM1 = '192.168.122.178'
 IP_EDGEBOX1_VM2 = '192.168.122.173'
+
+RED = "#ff0000"
+DARK_GREEN = "#224d17"
+GREEN = "#099441"
+LIGHT_GREEN = "#60a830"
+YELLOW_GREEN = "d9df1d"
+BLACK = "#000000"
+WHITE = "#FFFFFF"
+GRAY = "#808080"
+SILVER = "#C0C0C0"
+YELLOW = "#FFFF00"
+
+col_edgebox1 = YELLOW
+col_edgebox2 = YELLOW
+col_kube1 = YELLOW
+col_kube2 = YELLOW
+col_master = YELLOW
+col_edgebox2_vm1 = YELLOW
+col_edgebox2_vm2 = YELLOW
+col_edgebox2_vm3 = YELLOW
+col_edgebox1_vm1 = YELLOW
+col_edgebox1_vm2 = YELLOW
 
 # connecting to pymongo db
 
@@ -143,17 +164,6 @@ def add_to_ip_saver(addr_merged, num):
 mid_val3 = [0,0,0]
 
 # define colors codes here
-RED = "#ff0000"
-DARK_GREEN = "#224d17"
-GREEN = "#099441"
-LIGHT_GREEN = "#60a830"
-YELLOW_GREEN = "d9df1d"
-BLACK = "#000000"
-WHITE = "#FFFFFF"
-GRAY = "#808080"
-SILVER = "#C0C0C0"
-YELLOW = "#FFFF00"
-
 # define parameter values for coloring
 LEVEL0 = 0
 LEVEL1 = 10
@@ -216,7 +226,7 @@ def update_graph_live(n):
     parents=[""," "," "," "," "," ","edgebox2","edgebox2","edgebox2","edgebox1","edgebox1","kube_1","kube_2","kube_master"],
 # values = [BPF2, BPF3, BPF1] : BFP1 size doesn't really change
 
-    marker = {"colors":[temp_color,YELLOW,YELLOW,YELLOW,YELLOW,YELLOW,RED,RED,RED,RED,RED,WHITE,WHITE,WHITE],
+    marker = {"colors":[temp_color,col_master,col_kube1,col_kube2,col_edgebox1,col_edgebox2,col_edgebox2_vm1,col_edgebox2_vm2,col_edgebox2_vm3,col_edgebox1_vm1,col_edgebox1_vm2,WHITE,WHITE,WHITE],
         "line":{'color':[BLACK]}}, # in the order of BPF2, BPF3
         ))  # set row / col here
 #    fig.update_layout(grid=dict(columns=1,rows=1),margin = dict(t=0, l=0, r=0, b=0)) # maybe this is where they change the subplot
