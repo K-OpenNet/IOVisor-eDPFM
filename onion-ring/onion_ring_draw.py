@@ -58,6 +58,19 @@ bpf3_color = RED
 
 app = dash.Dash()
 
+def define_color(input):
+    input = int(input)
+    if input < 100 :
+        return YELLOW_GREEN
+    elif input >=100 and input < 200:
+        return YELLOW
+    elif input >=200 and input < 400:
+        return LIGHT_GREEN
+    elif input >=400 and input < 600:
+        return GREEN
+    elif input >=600 and input < 800:
+        return DARK_GREEN
+
 app.layout = html.Div([
     html.H1(children='upper'),
     dcc.Graph(id='live-update-graph',animate=True),
@@ -74,10 +87,39 @@ app.layout = html.Div([
 def update_graph_live(n):
     # input source for data - BEGIN
 
-    f = open('packet_stat.txt', 'r')
-    pkt_num = f.read()
-    print(pkt_num)
-    
+
+    f = open('edgebox1.txt', 'r')
+#    num_edgebox1 = f.read()
+    col_edgebox1 = define_color(f.read())
+    f.close()
+    f = open('edgebox1_vm1.txt', 'r')
+    col_edgebox1_vm1 = define_color(f.read())
+    f.close()
+    f = open('edgebox1_vm2.txt', 'r')
+    col_edgebox1_vm2 = define_color(f.read())
+    f.close()
+    f = open('edgebox2.txt', 'r')
+    col_edgebox2 = define_color(f.read())
+    f.close()
+    f = open('edgebox2_vm1.txt', 'r')
+    col_edgebox2_vm1 = define_color(f.read())
+    f.close()
+    f = open('edgebox2_vm2.txt', 'r')
+    col_edgebox2_vm2 = define_color(f.read())
+    f.close()
+    f = open('edgebox2_vm3.txt', 'r')
+    col_edgebox2_vm3 = define_color(f.read())
+    f.close()
+    f = open('kube1.txt', 'r')
+    col_kube1 = define_color(f.read())
+    f.close()
+    f = open('kube2.txt', 'r')
+    col_kube2 = define_color(f.read())
+    f.close()
+    f = open('master.txt','r')
+    col_master = define_color(f.read())
+    f.close()
+
     # input source for data - END
     fig = go.Figure(go.Sunburst(
     textfont = {"size":15},
@@ -87,7 +129,7 @@ def update_graph_live(n):
     parents=[""," "," "," "," "," ","edgebox2","edgebox2","edgebox2","edgebox1","edgebox1","kube_1","kube_2","kube_master"],
 # values = [BPF2, BPF3, BPF1] : BFP1 size doesn't really change
 
-    marker = {"colors":[WHITE,YELLOW,YELLOW,YELLOW,YELLOW,YELLOW,RED,RED,RED,RED,RED,WHITE,WHITE,WHITE],
+    marker = {"colors":[WHITE,col_master,col_kube1,col_kube2,col_edgebox1,col_edgebox2,col_edgebox2_vm1,col_edgebox2_vm2,col_edgebox2_vm3,col_edgebox1_vm1,col_edgebox1_vm2,WHITE,WHITE,WHITE],
         "line":{'color':[BLACK]}}, # in the order of BPF2, BPF3
         ))  # set row / col here
 #    fig.update_layout(grid=dict(columns=1,rows=1),margin = dict(t=0, l=0, r=0, b=0)) # maybe this is where they change the subplot
