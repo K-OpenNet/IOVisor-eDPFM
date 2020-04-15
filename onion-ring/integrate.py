@@ -54,6 +54,19 @@ collection = db['bpf2']
 result = 0
 
 def print_value():
+
+        
+        global col_edgebox1
+        global col_edgebox2
+        global col_kube1
+        global col_kube2
+        global col_master
+        global col_edgebox2_vm1
+        global col_edgebox2_vm2 
+        global col_edgebox2_vm3
+        global col_edgebox1_vm1
+        global col_edgebox1_vm2
+
         num_edgebox1 = 0
         num_edgebox2 = 0
         num_kube1 = 0
@@ -117,6 +130,8 @@ def print_value():
         print("edgebox2_vm3 " + str(num_edgebox2_vm3))
         print("edgebox1_vm1 " + str(num_edgebox1_vm1))
         print("edgebox1_vm2 " + str(num_edgebox1_vm2))
+
+
 
 #        print(post)
 #        result = result + int(str(post)[15:-2])

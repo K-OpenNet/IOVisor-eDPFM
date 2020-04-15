@@ -2,14 +2,6 @@ import os
 import subprocess
 from pymongo import MongoClient
 import time
-url : 127.0.0.1
-import plotly.graph_objects as go
-import sys
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
-
 
 IP_EDGEBOX1 = '172.30.84.93'
 IP_EDGEBOX2 = '172.30.84.92'
@@ -96,6 +88,19 @@ def print_value():
         print("edgebox2_vm3 " + str(num_edgebox2_vm3))
         print("edgebox1_vm1 " + str(num_edgebox1_vm1))
         print("edgebox1_vm2 " + str(num_edgebox1_vm2))
+
+        f = open('packet_stat.txt','w')
+        f.write(str(num_edgebox1) + ' ')
+        f.write(str(num_edgebox2) + ' ')
+        f.write(str(num_kube1) + ' ')
+        f.write(str(num_kube2) + ' ')
+        f.write(str(num_master) + ' ')
+        f.write(str(num_edgebox2_vm1) + ' ')
+        f.write(str(num_edgebox2_vm2) + ' ')
+        f.write(str(num_edgebox2_vm3) + ' ')
+        f.write(str(num_edgebox1_vm1) + ' ')
+        f.write(str(num_edgebox1_vm2) + ' ')
+        f.close()
 
 #        print(post)
 #        result = result + int(str(post)[15:-2])
