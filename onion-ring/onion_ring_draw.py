@@ -74,8 +74,9 @@ app.layout = html.Div([
 def update_graph_live(n):
     # input source for data - BEGIN
 
-    f = open('color.txt', 'r')
-    temp_color = f.read()
+    f = open('packet_stat.txt', 'r')
+    pkt_num = f.read()
+    print(pkt_num)
     
     # input source for data - END
     fig = go.Figure(go.Sunburst(
@@ -86,7 +87,7 @@ def update_graph_live(n):
     parents=[""," "," "," "," "," ","edgebox2","edgebox2","edgebox2","edgebox1","edgebox1","kube_1","kube_2","kube_master"],
 # values = [BPF2, BPF3, BPF1] : BFP1 size doesn't really change
 
-    marker = {"colors":[temp_color,YELLOW,YELLOW,YELLOW,YELLOW,YELLOW,RED,RED,RED,RED,RED,WHITE,WHITE,WHITE],
+    marker = {"colors":[WHITE,YELLOW,YELLOW,YELLOW,YELLOW,YELLOW,RED,RED,RED,RED,RED,WHITE,WHITE,WHITE],
         "line":{'color':[BLACK]}}, # in the order of BPF2, BPF3
         ))  # set row / col here
 #    fig.update_layout(grid=dict(columns=1,rows=1),margin = dict(t=0, l=0, r=0, b=0)) # maybe this is where they change the subplot
