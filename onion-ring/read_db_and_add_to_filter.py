@@ -2,12 +2,25 @@ import os
 import subprocess
 from pymongo import MongoClient
 import time
+url : 127.0.0.1
+import plotly.graph_objects as go
+import sys
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+
 
 IP_EDGEBOX1 = '172.30.84.93'
 IP_EDGEBOX2 = '172.30.84.92'
 IP_KUBE1 = '172.30.84.95'
 IP_KUBE2 = '172.30.84.94'
 IP_MASTER = '172.30.84.96'
+IP_EDGEBOX2_VM1 = '192.168.122.205'
+IP_EDGEBOX2_VM2 = '192.168.122.134'
+IP_EDGEBOX2_VM3 = '192.168.122.142'
+IP_EDGEBOX1_VM1 = '192.168.122.178'
+IP_EDGEBOX1_VM2 = '192.168.122.173'
 
 # connecting to pymongo db
 
@@ -25,13 +38,23 @@ def print_value():
         num_kube1 = 0
         num_kube2 = 0
         num_master = 0
+        num_edgebox2_vm1 = 0
+        num_edgebox2_vm2 = 0
+        num_edgebox2_vm3 = 0
+        num_edgebox1_vm1 = 0
+        num_edgebox1_vm2 = 0
+
         current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
 
         current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
         global result
  
         for post in collection.find({'time':{'$gt':current_time_minus_5,'$lt':current_time}},{'_id':0,'dst_ip':1,'pkt_num':1}):
-            temp_ip = str(post)[14:26]
+            print(post)
+            pos_start = str(post).find('u\'dst_ip\': ') + 13
+            pos_end = str(post).find(', u\'pkt_num\':') -1
+            temp_ip = str(post)[pos_start:pos_end]
+
             counter = 0
             temp = str(post)[::-1]
             for i in temp:
@@ -41,7 +64,7 @@ def print_value():
                     counter = counter+1
 
             temp_pkt_num = int(str(post)[-counter+3:-2])
-
+            print(temp_ip)
             if (temp_ip == IP_EDGEBOX1):
                 num_edgebox1 = num_edgebox1 + temp_pkt_num
             elif (temp_ip == IP_EDGEBOX2):
@@ -52,12 +75,28 @@ def print_value():
                 num_kube2 = num_kube2 + temp_pkt_num
             elif (temp_ip == IP_MASTER):
                 num_master = num_master + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX2_VM1):
+                num_edgebox2_vm1 = num_edgebox2_vm1 + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX2_VM2):
+                num_edgebox2_vm2 = num_edgebox2_vm2 + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX2_VM3):
+                num_edgebox2_vm3 = num_edgebox2_vm3 + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX1_VM1):
+                num_edgebox1_vm1 = num_edgebox1_vm1 + temp_pkt_num
+            elif (temp_ip == IP_EDGEBOX1_VM2):
+                num_edgebox1_vm2 = num_edgebox1_vm2 + temp_pkt_num
 
         print("edgebox1 " + str(num_edgebox1))
         print("edgebox2 " + str(num_edgebox2))
         print("kube1 " + str(num_kube1))
         print("kube2 " + str(num_kube2))
         print("master " + str(num_master))
+        print("edgebox2_vm1 " + str(num_edgebox2_vm1))
+        print("edgebox2_vm2 " + str(num_edgebox2_vm2))
+        print("edgebox2_vm3 " + str(num_edgebox2_vm3))
+        print("edgebox1_vm1 " + str(num_edgebox1_vm1))
+        print("edgebox1_vm2 " + str(num_edgebox1_vm2))
+
 #        print(post)
 #        result = result + int(str(post)[15:-2])
 
@@ -119,6 +158,6 @@ def search_db():
 try:
     while True:
         print_value()
-        time.sleep(4)
+        time.sleep(1)
 except KeyboardInterrupt:
     pass
