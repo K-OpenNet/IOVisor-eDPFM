@@ -3,13 +3,21 @@ IOVisor-eBPF Dynamic Packet Filtering and Monitoring for K-ONE project
 
 Instructions
 
-1. Upgrade the linux kernel to 5.4 (refer to http://ubuntuhandbook.org/index.php/2019/11/linux-kernel-5-4-released/)
+1. Install bcc (refer to https://github.com/iovisor/bcc/blob/master/INSTALL.md)
 
-2. Install bcc (refer to https://github.com/iovisor/bcc/blob/master/INSTALL.md)
+2. Clone the directory
 
-3. Clone the directory
+3. Do not run any scripts from the installation folder, the script files are just for testing purposes
 
-4. Do not run any scripts from the installation folder, the script files are just for testing purposes
+- eBPF based packet monitoring program has same functionalities with /bcc/example/networking/net_monitor.py. If you intend to just monitor your network interface, I advise you to check it out.
+
+4. Run kafka zookeeper(either from the data rx / data tx) and a broker server
+
+$ kafka/kafka_2.12-2.4.0/bin/zookeeper-server-start.sh config/zookeeper.properties
+
+$ kafka/kafka_2.12-2.4.0/bin/kafka-server-start.sh config/server.properties
+
+5. 
 
 - for eBPF based packet monitoring
 python IOVisor-eDPFM/eBPF/packet_monitor.py
