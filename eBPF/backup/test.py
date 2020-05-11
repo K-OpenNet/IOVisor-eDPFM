@@ -1,173 +1,141 @@
+#!/usr/bin/python
+#
+# net_monitor.py Aggregate incoming network traffic status
+# net_monitor.py <net_interface> to execute
+#
+# Copyright (c) 2020 YoungEun Choe
+
 from bcc import BPF
-import pyroute2
 import time
+from ast import literal_eval
 import sys
-from ctypes import *
 
-bootstrap_servers = ['lcaolhost:9092','localhost:9091','localhost:9090']
-topicName = 'xdp_packet'
-
-producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
-producer = KafkaProducer()
-
-def convert_ip_to_bin(data):    # converts machine friendly IP -> human friendly IP
-        #input is a machine friendly IP
-        data =  "{0:b}".format(data.value).zfill(28)
-        #    data = ''.join(str((int((data[0:4]),2))))
-        # 0:4 - 1
-        # 4:12 - 1
-        # 12:20 - 168
-        # 20:28
-
-        one = ''.join(str((int((data[20:28]),2))))
-        two = ''.join(str((int((data[12:20]),2))))
-        three = ''.join(str((int((data[4:12]),2))))
-        four = ''.join(str((int((data[0:4]),2))))
-        back = one +'.' + two + '.'+ three +'.' + four
-        return back
-
-def convert_ip_to_machine(hum_address) :   # converts human friendly IP -> machine friendly IP
-    # input is a human friendly IP
-    length = len(hum_address)
-    dot = []    # save dot positions fo the human readable IP address
-    frag = []   # save fragmented numbers of humanm readable IP addresses, each separated by a dot
-    i=0
-    while (i< length):
-        if (hum_address[i] == '.'):
-            dot.append(i)   # save dot positions
-    i = i +1
-
-    i=0
-
-    while (i < len(dot)):   # fragment human readable IP address in between dots & switch them into binaries
-        if (i==0):
-            frag.append(bin(int(hum_address[:int(dot[0])])))
-        else:
-            frag.append(bin(int(hum_address[int(dot[i-1]+1):int(dot[i])])))
-        i = i+1
-
-    frag.append(bin(int(hum_address[int(dot[i-1])+1:])))
-    i=0
-    while (i< len(dot)+1):
-            frag[i] = frag[i][2:]
-            frag[i] = frag[i].zfill(8)
-            i = i+1
-
-    frag.reverse()  # reverse the order of the frag list
-    i=0
-    binary_ver = ''
-    while (i< len(dot)+1):
-        binary_ver = binary_ver + frag[i]
-        i = i+1
-
-    output = int(binary_ver,2)
-    return output
-
-flags = 0
-def usage():
-    print("Usage: {0} [-S] <ifdev>".format(sys.argv[0]))
-    print("       -S: use skb mode\n")
-    print("       -H: use hardware offload mode\n")
-    print("e.g.: {0} eth0\n".format(sys.argv[0]))
+def help():
+    print("execute: {0} <net_interface>".format(sys.argv[0]))
+    print("e.g.: {0} eno1\n".format(sys.argv[0]))
     exit(1)
 
-if len(sys.argv) < 2 or len(sys.argv) > 3:
-    usage()
+if len(sys.argv) != 2:
+    help()
+elif len(sys.argv) == 2:
+    INTERFACE = sys.argv[1]
 
-offload_device = None
-if len(sys.argv) == 2:
-    device = sys.argv[1]
-elif len(sys.argv) == 3:
-    device = sys.argv[2]
-
-_xdp_file = "xdp.c"
-
-maptype = "percpu_array"
-if len(sys.argv) == 3:
-    if "-S" in sys.argv:
-        # XDP_FLAGS_SKB_MODE
-        flags |= (1 << 1)
-    if "-H" in sys.argv:
-        # XDP_FLAGS_HW_MODE
-        maptype = "array"
-        offload_device = device
-        flags |= (1 << 3)
-
-mode = BPF.XDP
-#mode = BPF.SCHED_CLS
-
-if mode == BPF.XDP:
-    ret = "XDP_PASS"
-    ctxtype = "xdp_md"
-else:
-    ret = "TC_ACT_SHOT"
-    ctxtype = "__sk_buff"
-
-# load BPF program
-b = BPF(src_file = _xdp_file, cflags=["-w", "-DRETURNCODE=%s" % ret, "-DCTXTYPE=%s" % ctxtype, "-DMAPTYPE=\"%s\"" % maptype], )
-
-fn = b.load_func("xdp_prog1", mode)
-
-if mode == BPF.XDP:
-    b.attach_xdp(device, fn, flags)
-else:
-    ip = pyroute2.IPRoute()
-    ipdb = pyroute2.IPDB(nl=ip)
-    idx = ipdb.interfaces[device].index
-    ip.tc("add", "clsact", idx)
-    ip.tc("add-filter", "bpf", idx, ":1", fd=fn.fd, name=fn.name,
-          parent="ffff:fff2", classid=1, direct_action=True)
-
-hash_addr = b.get_table("hash_addr")
-dropcnt = b.get_table("dropcnt")
-
-prev = [0] * 256
-counter = 0
-print(">> hit CTRL+C to stop")
-#ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
-while 1:
-    #under while
-#    try:
-        # here
-    for k in dropcnt.keys():
-        val = dropcnt[k].value if maptype == "array" else dropcnt.sum(k).value
-        i = k.value
-
-        delta = val - prev[i]
-        prev[i] = val
-        if delta != 0 :
-            counter = counter + 1
-            print('packet number : ' + str(counter) + '\n')
-            ip_addr = str(convert_ip_to_bin((hash_addr.items()[0][1])))
-#        ip_addr = str(hash_addr.items()[0][1])  # DELETE THIS LINE AFTER THE TEST
-            ip_daddr = str(convert_ip_to_bin(hash_addr.items()[1][1]))
-            ip_tos = str(hash_addr.items()[2][1])[8:-2] # [8:-2] deletes those u_clong8242L's unnecessary parts 
-            ip_id = str(hash_addr.items()[3][1])[8:-2]
-            ip_frag_off = str(hash_addr.items()[4][1])[8:-2]
-            ip_ttl = str(hash_addr.items()[5][1])[8:-2]
-            ip_protocol = str(hash_addr.items()[6][1])[8:-2]
-            ip_check = str(hash_addr.items()[7][1])[8:-2]
-            ip_tot_len = str(hash_addr.items()[8][1])[8:-2]
-             
-# delta : number of packets sent within a certain number of period
-
-            contents = str(ip_addr + '|' + ip_daddr + '|' +  ip_tos) \
-                    + '|' + ip_id + '|' + ip_frag_off + '|' + ip_ttl \
-                    + '|' + ip_protocol + '|' + ip_check + '|' + ip_tot_len
-            print(contents)
-            print('\n')
-            ack = producer.send(topicName, contents)
-#            time.sleep(1)
+bpf_text = """
+#include <uapi/linux/ptrace.h>
+#include <net/sock.h>
+#include <bcc/proto.h>
+#include <linux/bpf.h>
+#define IP_TCP 6
+#define IP_UDP 17
+#define IP_ICMP 1
+#define ETH_HLEN 14
+BPF_PERF_OUTPUT(skb_events);
+BPF_HASH(packet_cnt, u64, long, 256); 
+int packet_monitor(struct __sk_buff *skb) {
+    u8 *cursor = 0;
+    u32 saddr;
+    u32 daddr;
+    long* count = 0;
+    long one = 1;
+    u64 add_test = 0;
     
-#    for k,v in hash_addr.items():
-#        print(str('k :' + ' ' + str(k.value) + ' ' + 'v : ' + str(v.value) + '\n'))
-#        time.sleep(1)
-#    except KeyboardInterrupt:
-#        print("Removing filter from device")
-#        break;
+    struct ethernet_t *ethernet = cursor_advance(cursor, sizeof(*ethernet));
+    if (!(ethernet -> type == 0x0800)) {    
+        return -1; // drop
+    }
+    struct ip_t *ip = cursor_advance(cursor, sizeof(*ip));
+    if (ip->nextp != IP_TCP) 
+    {
+        if (ip -> nextp != IP_UDP) 
+        {
+            if (ip -> nextp != IP_ICMP) 
+                return 0; 
+        }
+    }
+    
+    saddr = ip -> src;
+    daddr = ip -> dst;
+    add_test = saddr;
+    add_test = add_test << 32;
+    add_test = add_test + daddr;
+    count = packet_cnt.lookup(&add_test); 
+    if (count)  // check if this map exists
+        *count += 1;
+    else        // if the map for the key doesn't exist, create one
+        {
+            packet_cnt.update(&add_test, &one);
+        }
+    return -1;
+}
+"""
 
-if mode == BPF.XDP:
-    b.remove_xdp(device, flags)
-else:
-    ip.tc("del", "clsact", idx)
-    ipdb.release()
+from ctypes import *
+import ctypes as ct
+import sys
+import socket
+import os
+import struct
+
+# define a function to output perf output
+
+tester_send = ''
+
+OUTPUT_INTERVAL = 1
+
+def print_skb_event(cpu, data, size):
+    global tester_send
+    class SkbEvent(ct.Structure):
+#        _fields_ = [ ("magic", ct.c_uint32),("magic2", ct.c_uint32)]
+        _fields_ = [("magic", ct.c_uint32)]
+        
+    skb_event = ct.cast(data, ct.POINTER(SkbEvent)).contents
+    
+
+bpf = BPF(text=bpf_text)
+
+function_skb_matching = bpf.load_func("packet_monitor", BPF.SOCKET_FILTER)
+
+BPF.attach_raw_socket(function_skb_matching, INTERFACE)
+
+bpf["skb_events"].open_perf_buffer(print_skb_event)
+
+    # retrieeve packet_cnt map
+packet_cnt = bpf.get_table('packet_cnt')    # retrieeve packet_cnt map
+
+#sys.stdout = open('myoutput.txt','w')
+
+def decimal_to_human(input_value):
+    input_value = int(input_value)
+    hex_value = hex(input_value)[2:]
+    pt3 = literal_eval((str('0x'+str(hex_value[-2:]))))
+    pt2 = literal_eval((str('0x'+str(hex_value[-4:-2]))))
+    pt1 = literal_eval((str('0x'+str(hex_value[-6:-4]))))
+    pt0 = literal_eval((str('0x'+str(hex_value[-8:-6]))))
+    result = str(pt0)+'.'+str(pt1)+'.'+str(pt2)+'.'+str(pt3)
+    return result
+
+try:
+    while True :
+        time.sleep(OUTPUT_INTERVAL)
+        packet_cnt_output = packet_cnt.items()
+        output_len = len(packet_cnt_output)
+        for i in range(0,output_len):
+            tester = int(str(packet_cnt_output[i][0])[8:-2]) # initial output omitted from the kernel space program
+            tester = int(str(bin(tester))[2:]) # raw file
+            src = int(str(tester)[:32],2) # part1 
+            dst = int(str(tester)[32:],2)
+            pkt_num = str(packet_cnt_output[i][1])[7:-1]
+
+            monitor_result = 'source address : ' + decimal_to_human(str(src)) + ' ' + \
+                    'destination address : ' + decimal_to_human(str(dst)) + ' ' + pkt_num + ' ' + \
+                    'time : ' + str(time.localtime()[0])+';'+str(time.localtime()[1]).zfill(2)+';'+\
+                    str(time.localtime()[2]).zfill(2)+';'+str(time.localtime()[3]).zfill(2)+';'+\
+                    str(time.localtime()[4]).zfill(2)+';'+str(time.localtime()[5]).zfill(2)
+            print(monitor_result)
+
+            # time.time() outputs time elapsed since 00:00 hours, 1st, Jan., 1970.
+        packet_cnt.clear() # delete map entires after printing output. confiremd it deletes values and keys too 
+        
+except KeyboardInterrupt:
+    sys.stdout.close()
+    pass
