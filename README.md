@@ -13,11 +13,21 @@ Instructions
 
 4. Run kafka zookeeper(either from the data rx / data tx) and a broker server
 
-$ kafka/kafka_2.12-2.4.0/bin/zookeeper-server-start.sh config/zookeeper.properties
+$ sudo kafka/kafka_2.12-2.4.0/bin/zookeeper-server-start.sh config/zookeeper.properties
 
-$ kafka/kafka_2.12-2.4.0/bin/kafka-server-start.sh config/server.properties
+$ sudo kafka/kafka_2.12-2.4.0/bin/kafka-server-start.sh config/server.properties
 
-5. 
+5'. Change the network interface names and kafka server/zookeeper IP addresses in the source code. 
+
+* later the source code will be edited so you can give ip interface names as inputs
+
+$ sudo vim eBPF/kafka_stat_n_packet_monitor.py
+
+5. Run eBPF based packet monitor
+
+$ sudo python eBPF/kafka_stat_n_packet_monitor.py
+
+* 
 
 - for eBPF based packet monitoring
 python IOVisor-eDPFM/eBPF/packet_monitor.py
