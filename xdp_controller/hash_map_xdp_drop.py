@@ -1,11 +1,5 @@
 #!/usr/bin/python
-#
-# xdp_drop_count.py Drop incoming packets on XDP layer and count for which
-#                   protocol type
-#
-# Copyright (c) 2016 PLUMgrid
-# Copyright (c) 2016 Jan Ruth
-# Licensed under the Apache License, Version 2.0 (the "License")
+
 from bcc import BPF
 import pyroute2
 import time
@@ -96,8 +90,6 @@ if len(sys.argv) == 3:
         flags |= (1 << 3)
 
 mode = BPF.XDP
-#mode = BPF.SCHED_CLS
-
 if mode == BPF.XDP:
     ret = "XDP_PASS"
     ctxtype = "xdp_md"
