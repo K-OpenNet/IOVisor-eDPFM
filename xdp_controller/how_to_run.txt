@@ -13,6 +13,4 @@ or (activated)
    192 168 000 002 d
    (deactivated)
 
-- for some reason, msgs are not received by Kafka unless msgs are sent about 100 times simulatneously
-
 for sending msg, you can use : dbtest.py
