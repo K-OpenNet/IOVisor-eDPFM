@@ -6,6 +6,11 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import flask
+
+app = dash.Dash(__name__)
+server = flask.Flask(__name__)
+app=dash.Dash(__name__,server=server)
 
 test_value1 = 14
 test_value2 = 2
@@ -138,6 +143,6 @@ def update_graph_live(n):
 
 go.visible = False
 
-app.run_server(debug=True)
+app.run_server(debug=True, host='210.117.251.25')
 
 #kafka_consumer()
