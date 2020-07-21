@@ -3,6 +3,7 @@ import subprocess
 from pymongo import MongoClient
 import time
 
+'''
 IP_EDGEBOX1 = '172.30.84.93'
 IP_EDGEBOX2 = '172.30.84.92'
 IP_KUBE1 = '172.30.84.95'
@@ -13,6 +14,28 @@ IP_EDGEBOX2_VM2 = '192.168.122.134'
 IP_EDGEBOX2_VM3 = '192.168.122.142'
 IP_EDGEBOX1_VM1 = '192.168.122.178'
 IP_EDGEBOX1_VM2 = '192.168.122.173'
+'''
+# this time scratch only physcial NICs
+
+CUBE1_ENO1 = '210.125.84.221'
+CUBE1_ENO2 = '172.20.91.221'
+CUBE1_ENO7 = '172.30.91.221'
+
+CUBE2_ENO1 = '210.125.84.222'
+CUBE2_ENO2 = '172.20.91.222'
+CUBE2_ENO7 = '172.30.91.222'
+
+CUBE3_ENO1 = '210.125.84.223'
+CUBE3_ENO2 = '172.20.91.223'
+CUBE3_ENO7 = '172.30.91.223'
+
+CUBE4_ENO1 = '210.125.84.224'
+CUBE4_ENO2 = '172.20.91.224'
+CUBE4_ENO7 = '172.30.91.224'
+
+CUBE5_ENO1 = '210.125.84.133'
+CUBE5_ENO2 = '172.20.91.133'
+CUBE5_ENO7 = '172.30.91.133'
 
 # connecting to pymongo db
 
@@ -25,18 +48,23 @@ collection = db['bpf2']
 result = 0
 
 def print_value():
-        num_edgebox1 = 0
-        num_edgebox2 = 0
-        num_kube1 = 0
-        num_kube2 = 0
-        num_master = 0
-        num_edgebox2_vm1 = 0
-        num_edgebox2_vm2 = 0
-        num_edgebox2_vm3 = 0
-        num_edgebox1_vm1 = 0
-        num_edgebox1_vm2 = 0
+        num_cube1_eno1 = 0
+        num_cube1_eno2 = 0
+        num_cube1_eno7 = 0
+        num_cube2_eno1 = 0
+        num_cube2_eno2 = 0
+        num_cube2_eno7 = 0
+        num_cube3_eno1 = 0
+        num_cube3_eno2 = 0
+        num_cube3_eno7 = 0
+        num_cube4_eno1 = 0
+        num_cube4_eno2 = 0
+        num_cube4_eno7 = 0
+        num_cube5_eno1 = 0
+        num_cube5_eno2 = 0
+        num_cube5_eno7 = 0
 
-        current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
+        current_time = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]+9).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]).zfill(2)
 
         current_time_minus_5 = str(time.localtime()[0]) + ';' + str(time.localtime()[1]).zfill(2) + ';' + str(time.localtime()[2]).zfill(2) + ';' + str(time.localtime()[3]).zfill(2) + ';' + str(time.localtime()[4]).zfill(2) + ';' + str(time.localtime()[5]-5).zfill(2)
         global result
@@ -57,67 +85,101 @@ def print_value():
 
             temp_pkt_num = int(str(post)[-counter+3:-2])
             print(temp_ip)
-            if (temp_ip == IP_EDGEBOX1):
-                num_edgebox1 = num_edgebox1 + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX2):
-                num_edgebox2 = num_edgebox2 + temp_pkt_num
-            elif (temp_ip == IP_KUBE1):
-                num_kube1 = num_kube1 + temp_pkt_num
-            elif (temp_ip == IP_KUBE2):
-                num_kube2 = num_kube2 + temp_pkt_num
-            elif (temp_ip == IP_MASTER):
-                num_master = num_master + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX2_VM1):
-                num_edgebox2_vm1 = num_edgebox2_vm1 + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX2_VM2):
-                num_edgebox2_vm2 = num_edgebox2_vm2 + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX2_VM3):
-                num_edgebox2_vm3 = num_edgebox2_vm3 + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX1_VM1):
-                num_edgebox1_vm1 = num_edgebox1_vm1 + temp_pkt_num
-            elif (temp_ip == IP_EDGEBOX1_VM2):
-                num_edgebox1_vm2 = num_edgebox1_vm2 + temp_pkt_num
+            if (temp_ip == CUBE1_ENO1):
+                num_cube1_eno1 = num_cube1_eno1 + temp_pkt_num
+            elif (temp_ip == CUBE1_ENO2):
+                num_cube1_eno2 = num_cube1_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE1_ENO7):
+                num_cube1_eno7 = num_cube1_eno7 + temp_pkt_num
+            elif (temp_ip == CUBE2_ENO1):
+                num_cube2_eno1 = num_cube2_eno1 + temp_pkt_num
+            elif (temp_ip == CUBE2_ENO2):
+                num_cube2_eno2 = num_cube2_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE2_ENO7):
+                num_cube2_eno7 = num_cube7_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE3_ENO1):
+                num_cube3_eno1 = num_cube3_eno1 + temp_pkt_num
+            elif (temp_ip == CUBE3_ENO2):
+                num_cube3_eno2 = num_cube3_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE3_ENO7):
+                num_cube3_eno7 = num_cube3_eno7 + temp_pkt_num
+            elif (temp_ip == CUBE4_ENO1):
+                num_cube4_eno1 = num_ecube4_eno1 + temp_pkt_num
+            elif (temp_ip == CUBE4_ENO2):
+                num_cube4_eno2 = num_cube4_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE4_ENO7):
+                num_cube4_eno7 = num_cube4_eno7 + temp_pkt_num
+            elif (temp_ip == CUBE5_ENO1):
+                num_cube5_eno1 = num_cube5_eno1 + temp_pkt_num
+            elif (temp_ip == CUBE5_ENO2):
+                num_cube5_eno2 = num_cube5_eno2 + temp_pkt_num
+            elif (temp_ip == CUBE5_ENO7):
+                num_cube5_eno7 = num_cube5_eno7 + temp_pkt_num
 
-        print("edgebox1 " + str(num_edgebox1))
-        print("edgebox2 " + str(num_edgebox2))
-        print("kube1 " + str(num_kube1))
-        print("kube2 " + str(num_kube2))
-        print("master " + str(num_master))
-        print("edgebox2_vm1 " + str(num_edgebox2_vm1))
-        print("edgebox2_vm2 " + str(num_edgebox2_vm2))
-        print("edgebox2_vm3 " + str(num_edgebox2_vm3))
-        print("edgebox1_vm1 " + str(num_edgebox1_vm1))
-        print("edgebox1_vm2 " + str(num_edgebox1_vm2))
+        print(current_time)
+        print("cube1_eno1 " + str(num_cube1_eno1))
+        print("cube1_eno2 " + str(num_cube1_eno2))
+        print("cube1_eno7 " + str(num_cube1_eno7))
+        print("cube2_eno1 " + str(num_cube2_eno1))
+        print("cube2_eno2 " + str(num_cube2_eno2))
+        print("cube2_eno7 " + str(num_cube2_eno7))
+        print("cube3_eno1 " + str(num_cube3_eno1))
+        print("cube3_eno2 " + str(num_cube3_eno2))
+        print("cube3_eno7 " + str(num_cube3_eno7))
+        print("cube4_eno1 " + str(num_cube4_eno1))
+        print("cube4_eno2 " + str(num_cube4_eno2))
+        print("cube4_eno7 " + str(num_cube4_eno7))
+        print("cube5_eno1 " + str(num_cube5_eno1))
+        print("cube5_eno2 " + str(num_cube5_eno2))
+        print("cube5_eno7 " + str(num_cube5_eno7))
+        print('=================================')
+        print(' ')
+        print('=================================')
 
-        f = open('edgebox1.txt','w')
-        f.write(str(num_edgebox1))
+        f = open('cube1_eno1.txt','w')
+        f.write(str(num_cube1_eno1))
         f.close()
-        f = open('edgebox2.txt','w')
-        f.write(str(num_edgebox2))
+        f = open('cube1_eno2.txt','w')
+        f.write(str(num_cube1_eno2))
         f.close()
-        f=open('kube1.txt','w')
-        f.write(str(num_kube1))
+        f = open('cube1_eno7.txt','w')
+        f.write(str(num_cube1_eno7))
         f.close()
-        f=open('kube2.txt','w')
-        f.write(str(num_kube2))
+        f=open('cube2_eno1.txt','w')
+        f.write(str(num_cube2_eno1))
         f.close()
-        f=open('master.txt','w')
-        f.write(str(num_master))
+        f=open('cube2_eno2.txt','w')
+        f.write(str(num_cube2_eno2))
         f.close()
-        f=open('edgebox2_vm1.txt','w')
-        f.write(str(num_edgebox2_vm1))
+        f=open('cube2_eno7.txt','w')
+        f.write(str(num_cube2_eno7))
         f.close()
-        f=open('edgebox2_vm2.txt','w')
-        f.write(str(num_edgebox2_vm2))
+        f=open('cube3_eno1.txt','w')
+        f.write(str(num_cube3_eno1))
         f.close()
-        f=open('edgebox2_vm3.txt','w')
-        f.write(str(num_edgebox2_vm3))
+        f=open('cube3_eno2.txt','w')
+        f.write(str(num_cube3_eno2))
         f.close()
-        f=open('edgebox1_vm1.txt','w')
-        f.write(str(num_edgebox1_vm1))
+        f=open('cube3_eno7.txt','w')
+        f.write(str(num_cube3_eno7))
         f.close()
-        f=open('edgebox1_vm2.txt','w')
-        f.write(str(num_edgebox1_vm2))
+        f=open('cube4_eno1.txt','w')
+        f.write(str(num_cube4_eno1))
+        f.close()
+        f=open('cube4_eno2.txt','w')
+        f.write(str(num_cube4_eno2))
+        f.close()
+        f=open('cube4_eno7.txt','w')
+        f.write(str(num_cube4_eno7))
+        f.close()
+        f=open('cube5_eno1.txt','w')
+        f.write(str(num_cube5_eno1))
+        f.close()
+        f=open('cube5_eno2.txt','w')
+        f.write(str(num_cube5_eno2))
+        f.close()
+        f=open('cube5_eno7.txt','w')
+        f.write(str(num_cube5_eno7))
         f.close()
 
 #        print(post)
@@ -145,7 +207,6 @@ print('- targetted bpf map id : ' + str(test4))
 # update bpf map value - begin
 #subprocess.call(["bpftool","map","update","id",str(black_list_map_id),"key","00","00","00","00","value","01","00","00","00","00","00","00","00"])
 # update bpf map value - end
-
 
 ip_address = []
 pkt_num = []

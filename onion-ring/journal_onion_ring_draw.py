@@ -6,6 +6,11 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import flask
+
+app = dash.Dash(__name__)
+server = flask.Flask(__name__)
+app=dash.Dash(__name__,server=server)
 
 test_value1 = 14
 test_value2 = 2
@@ -14,7 +19,7 @@ mid_val3 = [0,0,0]
 
 # define colors codes here
 RED = "#ff0000"
-DARK_GREEN = "#224              7"
+DARK_GREEN = "#006400"
 GREEN = "#099441"
 LIGHT_GREEN = "#60a830"
 YELLOW_GREEN = "d9df1d"
@@ -23,6 +28,9 @@ WHITE = "#FFFFFF"
 GRAY = "#808080"
 SILVER = "#C0C0C0"
 YELLOW = "#FFFF00"
+FOREST_GREEN = "#228B22"
+LIME = "#F4FF00"
+
 
 # define parameter values for coloring
 LEVEL0 = 0
@@ -63,13 +71,15 @@ def define_color(input):
     if input < 100 :
         return YELLOW_GREEN
     elif input >=100 and input < 200:
-        return YELLOW
+        return LIME
     elif input >=200 and input < 400:
-        return LIGHT_GREEN
+        return YELLOW
     elif input >=400 and input < 600:
-        return GREEN
+        return LIGHT_GREEN
     elif input >=600 and input < 800:
         return DARK_GREEN
+    else:
+        return RED
 
 app.layout = html.Div([
     html.H1(children='upper'),
@@ -87,38 +97,99 @@ app.layout = html.Div([
 def update_graph_live(n):
     # input source for data - BEGIN
 
+    f = open('cube1_eno1.txt', 'r')
+    cube1_1 = f.read()
+    col_cube1_eno1 = define_color(cube1_1)
+    f.close()
 
-    f = open('edgebox1.txt', 'r')
-#    num_edgebox1 = f.read()
-    col_edgebox1 = define_color(f.read())
+    f = open('cube1_eno2.txt', 'r')
+    cube1_2 = f.read()
+    col_cube1_eno2 = define_color(cube1_2)
     f.close()
-    f = open('edgebox1_vm1.txt', 'r')
-    col_edgebox1_vm1 = define_color(f.read())
+
+    f = open('cube1_eno7.txt', 'r')
+    cube1_7 = f.read()
+    col_cube1_eno7 = define_color(cube1_7)
     f.close()
-    f = open('edgebox1_vm2.txt', 'r')
-    col_edgebox1_vm2 = define_color(f.read())
+
+    # place for cube1_3 (add cube1_3 below too)
+    col_cube1_eno3 = LIME
+
+    col_cube1 = define_color(int(cube1_1)+int(cube1_2)+int(cube1_7))
+
+    f = open('cube2_eno1.txt', 'r')
+    cube2_1 = f.read()
+    col_cube2_eno1 = define_color(cube2_1)
     f.close()
-    f = open('edgebox2.txt', 'r')
-    col_edgebox2 = define_color(f.read())
+
+    f = open('cube2_eno2.txt', 'r')
+    cube2_2 = f.read()
+    col_cube2_eno2 = define_color(cube2_2)
     f.close()
-    f = open('edgebox2_vm1.txt', 'r')
-    col_edgebox2_vm1 = define_color(f.read())
+
+    f = open('cube2_eno7.txt', 'r')
+    cube2_7 = f.read()
+    col_cube2_eno7 = define_color(cube2_7)
     f.close()
-    f = open('edgebox2_vm2.txt', 'r')
-    col_edgebox2_vm2 = define_color(f.read())
+
+    # place for cube2_3 (add cube2_3 below too)
+    col_cube2_eno3 = LIME
+
+    col_cube2 = define_color(int(cube2_1)+int(cube2_2)+int(cube2_7))
+
+    f = open('cube3_eno1.txt', 'r')
+    cube3_1 = f.read()
+    col_cube3_eno1 = define_color(cube3_1)
     f.close()
-    f = open('edgebox2_vm3.txt', 'r')
-    col_edgebox2_vm3 = define_color(f.read())
+
+    f = open('cube3_eno2.txt', 'r')
+    cube3_2 = f.read()
+    col_cube3_eno2 = define_color(cube3_2)
     f.close()
-    f = open('kube1.txt', 'r')
-    col_kube1 = define_color(f.read())
+
+    # place for cube3_3 (add cube3_3 below too)
+    f = open('cube3_eno7.txt', 'r')
+    cube3_7 = f.read()
+    col_cube3_eno7 = define_color(cube3_7)
     f.close()
-    f = open('kube2.txt', 'r')
-    col_kube2 = define_color(f.read())
+
+    col_cube3 = define_color(int(cube3_1)+int(cube3_2)+int(cube3_7))
+
+    f = open('cube4_eno1.txt', 'r')
+    cube4_1 = f.read()
+    col_cube4_eno1 = define_color(cube4_1)
     f.close()
-    f = open('master.txt','r')
-    col_master = define_color(f.read())
+
+    f = open('cube4_eno2.txt', 'r')
+    cube4_2 = f.read()
+    col_cube4_eno2 = define_color(cube4_2)
     f.close()
+
+    f = open('cube4_eno7.txt', 'r')
+    cube4_7 = f.read()
+    col_cube4_eno7 = define_color(cube4_7)
+    f.close()
+
+    col_cube4 = define_color(int(cube4_1)+int(cube4_2)+int(cube4_7))
+
+    # Place for cube5
+
+    f = open('cube5_eno1.txt', 'r')
+    cube5_1 = f.read()
+    col_cube5_eno1 = define_color(cube5_1)
+    f.close()
+
+    f = open('cube5_eno2.txt', 'r')
+    cube5_2 = f.read()
+    col_cube5_eno2 = define_color(cube5_2)
+    f.close()
+
+    f = open('cube5_eno7.txt', 'r')
+    cube5_7 = f.read()
+    col_cube5_eno7 = define_color(cube5_7)
+    f.close()
+
+    col_cube5 = define_color(int(cube5_1)+int(cube5_2)+int(cube5_7))
 
     # input source for data - END
     fig = go.Figure(go.Sunburst(
@@ -129,7 +200,7 @@ def update_graph_live(n):
 parents=[""," ","K-Fabric","K-Fabric","K-Fabric","K-Fabric","K-Fabric","K-Cube1","K-Cube1","K-Cube1","K-Cube2","K-Cube2","K-Cube2","K-Cube3","K-Cube3","K-Cube3","K-Cube4","K-Cube4","K-Cube4","K-Cube5","K-Cube5","K-Cube5","eno1    ","vSW1","vSW1","vSW3","vSW3","vSW2","eno1","vSW1 ","vSW1 ","vSW3 ","vSW3 ","vSW2 ",],
 # values = [BPF2, BPF3, BPF1] : BFP1 size doesn't really change
 
-marker = {"colors":[WHITE,WHITE,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,],
+marker = {"colors":[WHITE,WHITE,col_cube1,col_cube2,col_cube3,col_cube4,col_cube5,col_cube1_eno1,col_cube1_eno2,col_cube1_eno7,col_cube2_eno1,col_cube2_eno2,col_cube2_eno7,col_cube3_eno1,col_cube3_eno2,col_cube3_eno7,col_cube4_eno1,col_cube4_eno2,col_cube4_eno7,col_cube5_eno1,col_cube5_eno2,col_cube5_eno7,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,],
         "line":{'color':[BLACK,BLACK,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,WHITE,]}}, # in the order of BPF2, BPF3
         
         ))  # set row / col here
@@ -139,6 +210,6 @@ marker = {"colors":[WHITE,WHITE,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRAY,GRA
 
 go.visible = False
 
-app.run_server(debug=True)
+app.run_server(debug=True, host='210.117.251.25')
 
 #kafka_consumer()
